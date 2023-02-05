@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    platform: linux/x86_64
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=user_password
+      - MYSQL_DATABASE=database
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - '3306:3306'
