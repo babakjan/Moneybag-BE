@@ -32,13 +32,13 @@ public class Account {
     private Long balance;
 
     @Nonnull
-    private String color; //TODO add default color
+    private String color = "#6290ff";
 
     @Nonnull
-    private String icon; //TODO add default icon
+    private String icon = "mdi-cash";
 
     private Boolean includeInStatistic = true;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Record> records = new ArrayList<>(); //one account belongs to many records
 }

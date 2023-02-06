@@ -5,6 +5,10 @@ public class RecordNotFoundException extends Exception {
         super();
     }
 
+    public RecordNotFoundException(Long id) {
+        super("Record of id: " + id + " not found.");
+    }
+
     public RecordNotFoundException(String message) {
         super(message);
     }

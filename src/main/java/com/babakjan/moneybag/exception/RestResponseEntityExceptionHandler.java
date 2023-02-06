@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice //allows consolidating multiple @ExceptionHandlers into single
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(AccountNotFoundException.class)
+    @ExceptionHandler({AccountNotFoundException.class, CategoryNotFoundException.class, RecordNotFoundException.class})
     public ResponseEntity<ErrorMessage> entityNotFoundException(Exception exception, WebRequest request) {
         ErrorMessage message = new ErrorMessage(HttpStatus.NOT_FOUND, exception.getMessage());
 

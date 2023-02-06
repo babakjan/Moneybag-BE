@@ -3,7 +3,6 @@ package com.babakjan.moneybag.service;
 import com.babakjan.moneybag.DTO.AccountDTO;
 import com.babakjan.moneybag.DTO.CreateAccountDTO;
 import com.babakjan.moneybag.entity.Account;
-import com.babakjan.moneybag.entity.Record;
 import com.babakjan.moneybag.exception.AccountNotFoundException;
 import com.babakjan.moneybag.exception.RecordNotFoundException;
 import com.babakjan.moneybag.repository.AccountRepository;
@@ -11,7 +10,6 @@ import com.babakjan.moneybag.repository.RecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,16 +67,7 @@ public class AccountService {
             optionalAccount.get().setIncludeInStatistic(accountDTO.getIncludeInStatistic());
         }
         if (null != accountDTO.getRecordIds()) {
-            //check if all record ids are valid ids
-            List<Record> records = new ArrayList<>();
-            for (Long recordId : accountDTO.getRecordIds()) {
-                Optional<Record> optionalRecord = recordRepository.findById(recordId);
-                if (optionalRecord.isEmpty()) {
-                    throw new RecordNotFoundException("Record of id: " + recordId + " not found.");
-                }
-                records.add(optionalRecord.get());
-            }
-            optionalAccount.get().setRecords(records);
+            optionalAccount.get().setRecords(recordRepository.findAllById(accountDTO.getRecordIds()));
         }
 
         accountRepository.save(optionalAccount.get());
