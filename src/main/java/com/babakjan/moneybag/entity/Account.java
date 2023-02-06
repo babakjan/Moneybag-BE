@@ -1,17 +1,17 @@
 package com.babakjan.moneybag.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "accounts")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,20 +20,25 @@ public class Account {
 
     @Id
     @GeneratedValue
-    private Long accountId;
+    private Long id;
 
+    @Nonnull
     private String name;
 
+    @Nonnull
     private String currency;
 
+    @Nonnull
     private Long balance;
 
-    private String color;
+    @Nonnull
+    private String color; //TODO add default color
 
-    private String icon;
+    @Nonnull
+    private String icon; //TODO add default icon
 
-    private Boolean includeInStatistic;
+    private Boolean includeInStatistic = true;
 
     @OneToMany
-    private List<Record> records; //one account belongs to many records
+    private List<Record> records = new ArrayList<>(); //one account belongs to many records
 }

@@ -1,5 +1,10 @@
+### macOS ##
 .DS_Store
 
+### docker data ##
+data
+
+## build ##
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

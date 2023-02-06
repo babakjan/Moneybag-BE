@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
+@Table(name = "records")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class Record {
 
     @Id
     @GeneratedValue
-    private Long recordId;
+    private Long id;
 
     private Long amount;
 
