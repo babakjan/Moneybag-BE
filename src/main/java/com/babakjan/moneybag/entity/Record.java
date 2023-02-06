@@ -29,4 +29,7 @@ public class Record {
 
     @ManyToOne
     private Account account; //many records belong to one account
+
+    @ManyToOne
+    private Category category; //many records belong to one category
 }
