@@ -1,8 +1,11 @@
 package com.babakjan.moneybag.controller;
 
 import com.babakjan.moneybag.DTO.AuthenticationRequest;
+import com.babakjan.moneybag.DTO.AuthenticationResponse;
+import com.babakjan.moneybag.DTO.RegisterRequest;
 import com.babakjan.moneybag.config.JwtUtils;
 import com.babakjan.moneybag.dao.UserDao;
+import com.babakjan.moneybag.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,20 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationService authenticationService;
 
-    private final UserDao userDao;
-
-    private final JwtUtils jwtUtils;
-
-    @PostMapping
-    public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        final UserDetails user = userDao.findUserByEmail(request.getEmail());
-        if (user != null) {
-            return ResponseEntity.ok().body(jwtUtils.generateToken(user));
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Some error has occurred");
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        System.out.println("authentication controller");
+        return ResponseEntity.ok(authenticationService.authenticate(request));
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+        System.out.println("register controller");
+        return ResponseEntity.ok(authenticationService.register(request));
+    }
+
 }
