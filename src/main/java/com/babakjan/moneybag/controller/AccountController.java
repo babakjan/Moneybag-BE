@@ -3,7 +3,6 @@ package com.babakjan.moneybag.controller;
 import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import com.babakjan.moneybag.exception.AccountNotFoundException;
-import com.babakjan.moneybag.exception.RecordNotFoundException;
 import com.babakjan.moneybag.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,29 +21,29 @@ public class AccountController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<AccountDto> getAccounts() {
-        return accountService.getAll();
+        return AccountService.accountsToDtos(accountService.getAll());
     }
 
     //get by id
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public AccountDto getAccountById(@PathVariable Long id) throws AccountNotFoundException {
-        return accountService.getById(id);
+        return accountService.getById(id).dto();
     }
 
     //create
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AccountDto createAccount(@RequestBody CreateAccountRequest request) {
-        return accountService.save(request);
+        return accountService.save(request).dto();
     }
 
     //update
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public AccountDto updateAccount(@RequestBody AccountDto request, @PathVariable Long id)
-            throws AccountNotFoundException, RecordNotFoundException {
-        return accountService.update(id, request);
+            throws AccountNotFoundException {
+        return accountService.update(id, request).dto();
     }
 
     //delete by id

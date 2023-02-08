@@ -4,12 +4,9 @@ import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import com.babakjan.moneybag.entity.Account;
 import com.babakjan.moneybag.exception.AccountNotFoundException;
-import com.babakjan.moneybag.exception.RecordNotFoundException;
 import com.babakjan.moneybag.repository.AccountRepository;
 import com.babakjan.moneybag.repository.RecordRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,29 +22,35 @@ public class AccountService {
     private final RecordRepository recordRepository;
 
     //get all
-    public List<AccountDto> getAll() {
-        return accountRepository.findAll()
-                .stream().map(AccountDto::new)
-                .collect(Collectors.toList());
+    public List<Account> getAll() {
+        return accountRepository.findAll();
     }
 
     //get by id
-    public AccountDto getById(Long id) throws AccountNotFoundException {
+    public Account getById(Long id) throws AccountNotFoundException {
+        if (id == null) {
+            throw new AccountNotFoundException("Account id can't be null.");
+        }
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
             throw new AccountNotFoundException(id);
         }
 
-        return new AccountDto(optionalAccount.get());
+        return optionalAccount.get();
     }
 
     //create
-    public AccountDto save(CreateAccountRequest request) {
-        return new AccountDto(accountRepository.save(new Account(request)));
+    public Account save(CreateAccountRequest request) {
+        return accountRepository.save(new Account(request));
+    }
+
+    //save
+    public Account save(Account account) {
+        return accountRepository.save(account);
     }
 
     //update
-    public AccountDto update(Long id, AccountDto accountDTO) throws AccountNotFoundException, RecordNotFoundException {
+    public Account update(Long id, AccountDto accountDTO) throws AccountNotFoundException {
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
             throw new AccountNotFoundException("Account of id: " + id + " not found.");
@@ -75,15 +78,24 @@ public class AccountService {
         }
 
         accountRepository.save(optionalAccount.get());
-        return new AccountDto(optionalAccount.get());
+        return optionalAccount.get();
     }
 
     //delete by id
     public void deleteById(Long id) throws AccountNotFoundException {
+        if (id == null) {
+            throw new AccountNotFoundException("Account id can't be null.");
+        }
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
             throw new AccountNotFoundException(id);
         }
         accountRepository.deleteById(id);
+    }
+
+    public static List<AccountDto> accountsToDtos(List<Account> accounts) {
+        return accounts
+                .stream().map(Account::dto)
+                .collect(Collectors.toList());
     }
 }

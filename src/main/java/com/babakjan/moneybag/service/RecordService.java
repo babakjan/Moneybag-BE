@@ -1,9 +1,15 @@
 package com.babakjan.moneybag.service;
 
+import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
+import com.babakjan.moneybag.entity.Account;
+import com.babakjan.moneybag.entity.Category;
 import com.babakjan.moneybag.entity.Record;
+import com.babakjan.moneybag.exception.AccountNotFoundException;
+import com.babakjan.moneybag.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.exception.RecordNotFoundException;
 import com.babakjan.moneybag.repository.RecordRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,19 +23,99 @@ public class RecordService {
 
     private final RecordRepository recordRepository;
 
+    private final AccountService accountService;
+
+    private final CategoryService categoryService;
+
     //get all
-    public List<RecordDto> getAll() {
-        return recordRepository.findAll()
-                .stream().map(RecordDto::new)
-                .collect(Collectors.toList());
+    public List<Record> getAll() {
+        return recordRepository.findAll();
     }
 
     //get by id
-    public RecordDto getById(Long id) throws RecordNotFoundException {
+    public Record getById(Long id) throws RecordNotFoundException {
+        if (id == null) {
+            throw new RecordNotFoundException("Record id can't be null.");
+        }
         Optional<Record> optionalRecord = recordRepository.findById(id);
         if (optionalRecord.isEmpty()) {
             throw new RecordNotFoundException(id);
         }
-        return new RecordDto(optionalRecord.get());
+        return optionalRecord.get();
+    }
+
+    //create
+    public Record save(CreateRecordRequest request) throws AccountNotFoundException, CategoryNotFoundException {
+        Account account = accountService.getById(request.getAccountId());
+        Category category = null;
+        if (request.getCategoryId() != null) {
+            category = categoryService.getById(request.getCategoryId());
+        }
+
+        Record record = recordRepository.save(new Record(request, account, category));
+        accountService.save(account);
+        categoryService.save(category);
+
+        return record;
+    }
+
+
+    //update
+    @Transactional
+    public Record update(Long id, RecordDto recordDto)
+            throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException {
+        //find data
+        Optional<Record> optionalRecord = recordRepository.findById(id);
+        if (optionalRecord.isEmpty()) {
+            throw new RecordNotFoundException(id);
+        }
+        Account newAccount = null;
+        if (null != recordDto.getAccountId()) {
+            newAccount = accountService.getById(recordDto.getAccountId());
+        }
+        Category newCategory = null;
+        if (null != recordDto.getCategoryId()) {
+            newCategory = categoryService.getById(recordDto.getCategoryId());
+        }
+
+        //data changes
+        if (null != newAccount) {
+            optionalRecord.get().setAccount(newAccount);
+        }
+        if (null != newCategory) {
+            optionalRecord.get().setCategory(newCategory);
+        }
+        if (null != recordDto.getLabel() && !"".equalsIgnoreCase(recordDto.getLabel())) {
+            optionalRecord.get().setLabel(recordDto.getLabel());
+        }
+        if (null != recordDto.getNote() && !"".equalsIgnoreCase(recordDto.getNote())) {
+            optionalRecord.get().setNote(recordDto.getNote());
+        }
+        if (null != recordDto.getAmount()) {
+            optionalRecord.get().setAmount(recordDto.getAmount());
+        }
+        if (null != recordDto.getDate()) {
+            optionalRecord.get().setDate(recordDto.getDate());
+        }
+
+        return recordRepository.save(optionalRecord.get());
+    }
+
+    //delete by id
+    public void deleteById(Long id) throws RecordNotFoundException {
+        if (id == null) {
+            throw new RecordNotFoundException("Record id can't be null.");
+        }
+        Optional<Record> optionalRecord = recordRepository.findById(id);
+        if (optionalRecord.isEmpty()) {
+            throw new RecordNotFoundException(id);
+        }
+        recordRepository.deleteById(id);
+    }
+
+    public static List<RecordDto> recordsToDto(List<Record> records) {
+        return records
+                .stream().map(Record::dto)
+                .collect(Collectors.toList());
     }
 }

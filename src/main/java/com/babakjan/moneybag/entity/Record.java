@@ -1,5 +1,7 @@
 package com.babakjan.moneybag.entity;
 
+import com.babakjan.moneybag.dto.record.CreateRecordRequest;
+import com.babakjan.moneybag.dto.record.RecordDto;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,4 +38,27 @@ public class Record {
 
     @ManyToOne
     private Category category; //many records belong to one category
+
+    public Record(CreateRecordRequest request, Account account, Category category) {
+        this.amount = request.getAmount();
+        this.label = request.getLabel();
+        this.note = request.getNote();
+        this.date = request.getDate();
+        this.account = account;
+        this.category = category;
+        account.addRecord(this);
+        category.addRecord(this);
+    }
+
+    public RecordDto dto() {
+        return RecordDto.builder()
+                .id(id)
+                .label(label)
+                .note(note)
+                .amount(amount)
+                .date(date)
+                .accountId(account.getId())
+                .categoryId(category.getId())
+                .build();
+    }
 }
