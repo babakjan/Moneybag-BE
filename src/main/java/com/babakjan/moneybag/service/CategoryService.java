@@ -3,9 +3,11 @@ package com.babakjan.moneybag.service;
 import com.babakjan.moneybag.dto.category.CategoryDto;
 import com.babakjan.moneybag.dto.category.CreateCategoryRequest;
 import com.babakjan.moneybag.entity.Category;
+import com.babakjan.moneybag.entity.Record;
 import com.babakjan.moneybag.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.repository.CategoryRepository;
 import com.babakjan.moneybag.repository.RecordRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +63,7 @@ public class CategoryService {
     }
 
     //update
+    @Transactional
     public Category update(Long id, CategoryDto categoryDto) throws CategoryNotFoundException {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (optionalCategory.isEmpty()) {
@@ -74,7 +77,12 @@ public class CategoryService {
             optionalCategory.get().setIcon(categoryDto.getIcon());
         }
         if (null != categoryDto.getRecordIds()) {
-            optionalCategory.get().setRecords(recordRepository.findAllById(categoryDto.getRecordIds()));
+            List<Record> records = recordRepository.findAllById(categoryDto.getRecordIds());
+
+            for (Record record : records) {
+                record.setCategory(optionalCategory.get());
+                optionalCategory.get().addRecord(record);
+            }
         }
 
         return categoryRepository.save(optionalCategory.get());
