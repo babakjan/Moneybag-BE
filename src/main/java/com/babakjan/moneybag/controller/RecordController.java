@@ -1,21 +1,24 @@
 package com.babakjan.moneybag.controller;
 
-import com.babakjan.moneybag.entity.Record;
+import com.babakjan.moneybag.dto.record.RecordDto;
 import com.babakjan.moneybag.service.RecordService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class RecordController {
 
-    @Autowired
-    private RecordService recordService;
+    private final RecordService recordService;
 
     @GetMapping("/records")
-    public List<Record> getAll() {
+    @ResponseStatus(HttpStatus.OK)
+    public List<RecordDto> getAll() {
         return recordService.getAll();
     }
 }

@@ -1,10 +1,8 @@
 package com.babakjan.moneybag.service;
 
-import com.babakjan.moneybag.DTO.AuthenticationRequest;
-import com.babakjan.moneybag.DTO.AuthenticationResponse;
-import com.babakjan.moneybag.DTO.RegisterRequest;
-import com.babakjan.moneybag.config.JwtUtils;
-import com.babakjan.moneybag.entity.Role;
+import com.babakjan.moneybag.dto.auth.AuthenticationRequest;
+import com.babakjan.moneybag.dto.auth.AuthenticationResponse;
+import com.babakjan.moneybag.dto.auth.RegisterRequest;
 import com.babakjan.moneybag.entity.User;
 import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,28 +18,24 @@ public class AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final JwtUtils jwtUtils;
+    private final JwtService jwtService;
 
     private final AuthenticationManager authenticationManager;
 
+    //register new user
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .build();
+        var user = new User(request, passwordEncoder);
 
         userRepository.save(user);
 
-        var jwtToken = jwtUtils.generateToken(user);
+        var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
 
+    //authenticate user - generate token
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -52,7 +46,7 @@ public class AuthenticationService {
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
 
-        var jwtToken = jwtUtils.generateToken(user);
+        var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)

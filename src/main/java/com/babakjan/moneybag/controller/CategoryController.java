@@ -1,50 +1,55 @@
 package com.babakjan.moneybag.controller;
 
-import com.babakjan.moneybag.DTO.CategoryDTO;
-import com.babakjan.moneybag.DTO.CreateCategoryDTO;
-import com.babakjan.moneybag.entity.Category;
+import com.babakjan.moneybag.dto.category.CategoryDto;
+import com.babakjan.moneybag.dto.category.CreateCategoryRequest;
 import com.babakjan.moneybag.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.exception.RecordNotFoundException;
 import com.babakjan.moneybag.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
+@RequiredArgsConstructor
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     //get all
     @GetMapping
-    public List<Category> getAll() {
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategoryDto> getAll() {
         return categoryService.getAll();
     }
 
     //get by id
     @GetMapping("/{id}")
-    public Category getById(@PathVariable Long id) throws CategoryNotFoundException {
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDto getById(@PathVariable Long id) throws CategoryNotFoundException {
         return categoryService.getById(id);
     }
 
     //create
     @PostMapping
-    public Category create(@RequestBody CreateCategoryDTO createCategoryDTO) {
-        return categoryService.save(createCategoryDTO);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryDto create(@RequestBody CreateCategoryRequest request) {
+        return categoryService.save(request);
     }
 
     //update
     @PutMapping("/{id}")
-    public CategoryDTO update(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO)
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDto update(@PathVariable Long id, @RequestBody CategoryDto request)
             throws RecordNotFoundException, CategoryNotFoundException {
-        return categoryService.update(id, categoryDTO);
+        return categoryService.update(id, request);
     }
 
     //delete
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) throws CategoryNotFoundException {
         categoryService.delete(id);
     }

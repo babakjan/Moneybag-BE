@@ -1,49 +1,53 @@
 package com.babakjan.moneybag.service;
 
-import com.babakjan.moneybag.DTO.AccountDTO;
-import com.babakjan.moneybag.DTO.CreateAccountDTO;
+import com.babakjan.moneybag.dto.account.AccountDto;
+import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import com.babakjan.moneybag.entity.Account;
 import com.babakjan.moneybag.exception.AccountNotFoundException;
 import com.babakjan.moneybag.exception.RecordNotFoundException;
 import com.babakjan.moneybag.repository.AccountRepository;
 import com.babakjan.moneybag.repository.RecordRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
 
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
-    @Autowired
-    RecordRepository recordRepository;
+    private final RecordRepository recordRepository;
 
     //get all
-    public List<Account> getAll() {
-        return accountRepository.findAll();
+    public List<AccountDto> getAll() {
+        return accountRepository.findAll()
+                .stream().map(AccountDto::new)
+                .collect(Collectors.toList());
     }
 
     //get by id
-    public Account getById(Long id) throws AccountNotFoundException {
+    public AccountDto getById(Long id) throws AccountNotFoundException {
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
             throw new AccountNotFoundException(id);
         }
 
-        return optionalAccount.get();
+        return new AccountDto(optionalAccount.get());
     }
 
     //create
-    public Account save(CreateAccountDTO createAccountDTO) {
-        return accountRepository.save(createAccountDTO.toAccount());
+    public AccountDto save(CreateAccountRequest request) {
+        return new AccountDto(accountRepository.save(new Account(request)));
     }
 
     //update
-    public AccountDTO update(Long id, AccountDTO accountDTO) throws AccountNotFoundException, RecordNotFoundException {
+    public AccountDto update(Long id, AccountDto accountDTO) throws AccountNotFoundException, RecordNotFoundException {
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
             throw new AccountNotFoundException("Account of id: " + id + " not found.");
@@ -71,7 +75,7 @@ public class AccountService {
         }
 
         accountRepository.save(optionalAccount.get());
-        return accountDTO;
+        return new AccountDto(optionalAccount.get());
     }
 
     //delete by id

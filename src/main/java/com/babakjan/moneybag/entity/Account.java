@@ -1,5 +1,6 @@
 package com.babakjan.moneybag.entity;
 
+import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,4 +42,14 @@ public class Account {
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Record> records = new ArrayList<>(); //one account belongs to many records
+
+    public Account(CreateAccountRequest request) {
+        name = request.getName();
+        currency = request.getCurrency();
+        balance = request.getBalance();
+        color = request.getColor();
+        icon = request.getIcon();
+        includeInStatistic = request.getIncludeInStatistic();
+        records = new ArrayList<>();
+    }
 }

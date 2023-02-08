@@ -1,10 +1,11 @@
-package com.babakjan.moneybag.config;
+package com.babakjan.moneybag.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -12,14 +13,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-/**
- * @source https://github.com/koushikkothagal/spring-security-jwt/blob/master/src/main/java/io/javabrains/springsecurityjwt/util/JwtUtil.java
- * edited a little
- */
 @Component
-public class JwtUtils {
+@Service
+public class JwtService {
 
-    private final String SECRET_KEY = "secret";
+    private final String SECRET_KEY = "secret"; //TODO load from application properties
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

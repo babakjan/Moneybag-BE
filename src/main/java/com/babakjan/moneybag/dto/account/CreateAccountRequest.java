@@ -1,18 +1,15 @@
-package com.babakjan.moneybag.DTO;
+package com.babakjan.moneybag.dto.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class AccountDTO {
-    private Long id;
+public class CreateAccountRequest {
 
     private String name;
 
@@ -25,6 +22,4 @@ public class AccountDTO {
     private String icon;
 
     private Boolean includeInStatistic;
-
-    private List<Long> recordIds;
 }

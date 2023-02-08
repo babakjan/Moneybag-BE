@@ -1,23 +1,16 @@
-package com.babakjan.moneybag.DTO;
+package com.babakjan.moneybag.dto.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CategoryDTO {
-
-    private Long id;
-
+public class CreateCategoryRequest {
     private String name;
 
     private String icon;
-
-    private List<Long> recordIds;
 }

@@ -1,5 +1,6 @@
 package com.babakjan.moneybag.entity;
 
+import com.babakjan.moneybag.dto.auth.RegisterRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,6 +33,14 @@ public class User implements UserDetails {
     private String email;
 
     private String password;
+
+    public User(RegisterRequest request, PasswordEncoder passwordEncoder) {
+        firstName = request.getFirstName();
+        lastName = request.getLastName();
+        email = request.getEmail();
+        password = passwordEncoder.encode(request.getPassword());
+        role = Role.USER;
+    }
 
     @Enumerated(EnumType.STRING)
     private Role role;

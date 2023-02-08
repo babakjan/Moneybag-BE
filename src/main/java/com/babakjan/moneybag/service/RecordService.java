@@ -1,24 +1,35 @@
 package com.babakjan.moneybag.service;
 
+import com.babakjan.moneybag.dto.record.RecordDto;
 import com.babakjan.moneybag.entity.Record;
+import com.babakjan.moneybag.exception.RecordNotFoundException;
 import com.babakjan.moneybag.repository.RecordRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class RecordService {
 
-    @Autowired
-    private RecordRepository recordRepository;
+    private final RecordRepository recordRepository;
 
-    public List<Record> getAll() {
-        return recordRepository.findAll();
+    //get all
+    public List<RecordDto> getAll() {
+        return recordRepository.findAll()
+                .stream().map(RecordDto::new)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Record> getById(Long id) {
-        return recordRepository.findById(id);
+    //get by id
+    public RecordDto getById(Long id) throws RecordNotFoundException {
+        Optional<Record> optionalRecord = recordRepository.findById(id);
+        if (optionalRecord.isEmpty()) {
+            throw new RecordNotFoundException(id);
+        }
+        return new RecordDto(optionalRecord.get());
     }
 }

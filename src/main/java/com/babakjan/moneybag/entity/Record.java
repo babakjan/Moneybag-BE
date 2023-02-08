@@ -1,5 +1,6 @@
 package com.babakjan.moneybag.entity;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,9 +27,11 @@ public class Record {
 
     private String note;
 
-    private Date created;
+    @Nonnull
+    private Date date;
 
     @ManyToOne
+    @Nonnull
     private Account account; //many records belong to one account
 
     @ManyToOne
