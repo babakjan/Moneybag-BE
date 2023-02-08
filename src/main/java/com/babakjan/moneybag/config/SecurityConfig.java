@@ -19,13 +19,20 @@ public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
 
+    private final String[] noAuthPaths = {
+            "/auth/**",
+            "/swagger-resources/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/**")
+                .requestMatchers(noAuthPaths)
                 .permitAll()
                 .anyRequest()
                 .authenticated()
