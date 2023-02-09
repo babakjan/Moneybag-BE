@@ -3,9 +3,12 @@ package com.babakjan.moneybag.service;
 import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import com.babakjan.moneybag.entity.Account;
+import com.babakjan.moneybag.entity.User;
 import com.babakjan.moneybag.exception.AccountNotFoundException;
+import com.babakjan.moneybag.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.AccountRepository;
 import com.babakjan.moneybag.repository.RecordRepository;
+import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,8 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
     private final RecordRepository recordRepository;
+
+    private final UserRepository userRepository;
 
     //get all
     public List<Account> getAll() {
@@ -40,8 +45,17 @@ public class AccountService {
     }
 
     //create
-    public Account save(CreateAccountRequest request) {
-        return accountRepository.save(new Account(request));
+    public Account save(CreateAccountRequest request) throws UserNotFoundException {
+        if (request.getUserId() == null) {
+            System.out.println("USER ID IS NULL");
+        }
+        Optional<User> optionalUser = userRepository.findById(request.getUserId());
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException(request.getUserId());
+        }
+        Account account = new Account(request, optionalUser.get());
+        optionalUser.get().addAccount(account);
+        return accountRepository.save(account);
     }
 
     //save

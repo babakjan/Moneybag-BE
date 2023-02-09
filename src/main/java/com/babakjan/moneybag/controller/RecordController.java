@@ -37,7 +37,7 @@ public class RecordController {
     //get all
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Return all records.")
+    @Operation(summary = "Return all records.", description = "Role ADMIN is required.")
     public List<RecordDto> getAll() {
         return RecordService.recordsToDto(recordService.getAll());
     }
@@ -45,7 +45,7 @@ public class RecordController {
     //get by id
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Return record by id.")
+    @Operation(summary = "Return record by id.", description = "Role ADMIN is required.")
     public RecordDto getById(@PathVariable Long id) throws RecordNotFoundException {
         return recordService.getById(id).dto();
     }
@@ -53,7 +53,7 @@ public class RecordController {
     //create
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create new record.")
+    @Operation(summary = "Create new record.", description = "Role ADMIN is required.")
     public RecordDto create(@RequestBody CreateRecordRequest request) throws CategoryNotFoundException, AccountNotFoundException {
         return recordService.save(request).dto();
     }
@@ -61,7 +61,7 @@ public class RecordController {
     //delete by id
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Delete record by id.")
+    @Operation(summary = "Delete record by id.", description = "Role ADMIN is required.")
     public void deleteById(@PathVariable Long id) throws RecordNotFoundException {
         recordService.deleteById(id);
     }
@@ -71,7 +71,7 @@ public class RecordController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Update record by id.",
-            description = "Update existing record by id, null or not provided fields are ignored."
+            description = "Update existing record by id, null or not provided fields are ignored. Role ADMIN is required."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),

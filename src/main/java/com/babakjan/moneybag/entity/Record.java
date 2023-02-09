@@ -44,10 +44,14 @@ public class Record {
         this.label = request.getLabel();
         this.note = request.getNote();
         this.date = request.getDate();
-        this.account = account;
-        this.category = category;
-        account.addRecord(this);
-        category.addRecord(this);
+        if (category != null) {
+            this.category = category;
+            category.addRecord(this);
+        }
+        if (account != null) {
+            account.addRecord(this);
+            this.account = account;
+        }
     }
 
     public RecordDto dto() {

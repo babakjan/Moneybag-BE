@@ -4,6 +4,7 @@ import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,14 +47,19 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Record> records = new ArrayList<>(); //one account belongs to many records
 
-    public Account(CreateAccountRequest request) {
-        name = request.getName();
-        currency = request.getCurrency();
-        balance = request.getBalance();
-        color = request.getColor();
-        icon = request.getIcon();
-        includeInStatistic = request.getIncludeInStatistic();
-        records = new ArrayList<>();
+    @ManyToOne
+    @NotNull
+    private User user; //many accounts belong to one user
+
+    public Account(CreateAccountRequest request, User user) {
+        this.name = request.getName();
+        this.currency = request.getCurrency();
+        this.balance = request.getBalance();
+        this.color = request.getColor();
+        this.icon = request.getIcon();
+        this.includeInStatistic = request.getIncludeInStatistic();
+        this.records = new ArrayList<>();
+        this.user = user;
     }
 
     public AccountDto dto() {
@@ -65,6 +71,7 @@ public class Account {
                 .color(color)
                 .icon(icon)
                 .includeInStatistic(includeInStatistic)
+                .userId(user != null ? user.getId() : null)
                 .recordIds(records
                         .stream().map(Record::getId)
                         .collect(Collectors.toList())
@@ -91,6 +98,7 @@ public class Account {
                 ", color='" + color + '\'' +
                 ", icon='" + icon + '\'' +
                 ", includeInStatistic=" + includeInStatistic +
+                ", user={ id=" +(user != null ? user.getId() + ", email=" + user.getEmail() + " }" : "null }") +
                 ", records=");
         for (Record record : records) {
             result.append(" ").append(record.getId());

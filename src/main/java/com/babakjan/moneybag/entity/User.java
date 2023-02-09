@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -38,12 +39,24 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Account> accounts; //one user belongs to many accounts
+
     public User(RegisterRequest request, PasswordEncoder passwordEncoder) {
         firstName = request.getFirstName();
         lastName = request.getLastName();
         email = request.getEmail();
         password = passwordEncoder.encode(request.getPassword());
         role = Role.USER;
+    }
+
+    public void  addAccount(Account account) {
+        for (Account a: accounts) {
+            if (Objects.equals(a.getId(), account.getId())) {
+                return; //account is already in list of accounts
+            }
+        }
+        accounts.add(account);
     }
 
     @Override

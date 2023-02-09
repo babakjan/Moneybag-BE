@@ -5,11 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorMessage {
     private HttpStatus status;
 
-    private String message;
+    private Map<String, String> errors;
+
+    public ErrorMessage(HttpStatus status) {
+        this.status = status;
+        this.errors = new HashMap<>();
+    }
 }

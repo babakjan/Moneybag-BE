@@ -35,7 +35,7 @@ public class CategoryController {
     //get all
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Return all categories.")
+    @Operation(summary = "Return all categories.", description = "Role ADMIN is required.")
     public List<CategoryDto> getAll() {
         return CategoryService.categoriesToDtos(categoryService.getAll());
     }
@@ -43,7 +43,7 @@ public class CategoryController {
     //get by id
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Return category by id.")
+    @Operation(summary = "Return category by id.", description = "Role ADMIN is required.")
     public CategoryDto getById(@PathVariable Long id) throws CategoryNotFoundException {
         return categoryService.getById(id).dto();
     }
@@ -51,7 +51,7 @@ public class CategoryController {
     //create
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create new category.")
+    @Operation(summary = "Create new category.", description = "Role ADMIN is required.")
     public CategoryDto create(@RequestBody CreateCategoryRequest request) {
         return categoryService.save(request).dto();
     }
@@ -59,7 +59,10 @@ public class CategoryController {
     //delete
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Delete category by id.", description = "All records in this category will be also deleted!")
+    @Operation(
+            summary = "Delete category by id.",
+            description = "All records in this category will be also deleted! Role ADMIN is required."
+    )
     public void delete(@PathVariable Long id) throws CategoryNotFoundException {
         categoryService.delete(id);
     }
@@ -69,7 +72,7 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Update category by id.",
-            description = "Update existing category by id, null or not provided fields are ignored."
+            description = "Update existing category by id, null or not provided fields are ignored. Role ADMIN is required."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
