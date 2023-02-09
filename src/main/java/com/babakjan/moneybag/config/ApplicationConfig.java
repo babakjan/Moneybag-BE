@@ -1,9 +1,11 @@
 package com.babakjan.moneybag.config;
 
 import com.babakjan.moneybag.repository.UserRepository;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,14 +57,30 @@ public class ApplicationConfig {
     }
 
     @Bean
+    public SecurityScheme securityScheme() {
+        return new SecurityScheme()
+                .bearerFormat("barer format")
+                .in(SecurityScheme.In.HEADER)
+                .description("description");
+    }
+
+    @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Moneybag")
-                        .version("1.0")
-                        .contact(contact())
-                        .description("Java backend REST API for Moneybag"));
-                     // .termsOfService("http://swagger.io/terms/")
-                     // .license(new License().name("Apache 2.0").url("http://springdoc.org")));
+                                .title("Moneybag")
+                                .version("1.0")
+                                .contact(contact())
+                                .description("Java backend REST API for Moneybag")
+                             // .termsOfService("http://swagger.io/terms/")
+                             // .license(new License().name("Apache 2.0").url("http://springdoc.org"))
+                )
+                .components(new Components()
+                        .addSecuritySchemes("bearer-key", new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                        )
+                );
     }
 }
