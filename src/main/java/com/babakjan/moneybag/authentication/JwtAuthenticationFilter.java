@@ -1,4 +1,4 @@
-package com.babakjan.moneybag.config;
+package com.babakjan.moneybag.authentication;
 
 import com.babakjan.moneybag.service.JwtService;
 import jakarta.servlet.FilterChain;

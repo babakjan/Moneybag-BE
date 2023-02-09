@@ -1,9 +1,12 @@
 package com.babakjan.moneybag.config;
 
+import com.babakjan.moneybag.authentication.JwtAuthenticationFilter;
+import com.babakjan.moneybag.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity(securedEnabled = true) //enables @Secured annotation
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -26,6 +30,12 @@ public class SecurityConfig {
             "/v3/api-docs/**"
     };
 
+    private final String[] adminPaths = {
+            "/accounts/**",
+            "/categories/**",
+            "/records/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -34,6 +44,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers(noAuthPaths)
                 .permitAll()
+                .requestMatchers(adminPaths)
+                .hasAuthority(Role.ADMIN.name())
                 .anyRequest()
                 .authenticated()
                 .and()

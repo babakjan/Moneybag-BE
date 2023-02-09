@@ -35,6 +35,9 @@ public class User implements UserDetails {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     public User(RegisterRequest request, PasswordEncoder passwordEncoder) {
         firstName = request.getFirstName();
         lastName = request.getLastName();
@@ -42,9 +45,6 @@ public class User implements UserDetails {
         password = passwordEncoder.encode(request.getPassword());
         role = Role.USER;
     }
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
