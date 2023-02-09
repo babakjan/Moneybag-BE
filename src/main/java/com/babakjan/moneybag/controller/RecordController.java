@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +55,8 @@ public class RecordController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create new record.", description = "Role ADMIN is required.")
-    public RecordDto create(@RequestBody CreateRecordRequest request) throws CategoryNotFoundException, AccountNotFoundException {
+    public RecordDto create(@RequestBody @Valid CreateRecordRequest request)
+            throws CategoryNotFoundException, AccountNotFoundException {
         return recordService.save(request).dto();
     }
 
@@ -77,7 +79,7 @@ public class RecordController {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
             @ApiResponse(responseCode = "404", description = "Category or account not found.")
     })
-    public RecordDto update(@PathVariable Long id, @RequestBody RecordDto request)
+    public RecordDto update(@PathVariable Long id, @RequestBody @Valid RecordDto request)
             throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException {
         return recordService.update(id, request).dto();
     }

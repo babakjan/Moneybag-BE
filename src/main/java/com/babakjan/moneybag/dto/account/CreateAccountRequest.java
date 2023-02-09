@@ -14,9 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateAccountRequest {
 
+    @NotNull
     @Size(min = 1, max = 20)
     private String name;
 
+    @NotNull
     @Size(min = 1, max = 20)
     private String currency;
 

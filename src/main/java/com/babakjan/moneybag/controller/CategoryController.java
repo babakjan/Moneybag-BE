@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +53,7 @@ public class CategoryController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create new category.", description = "Role ADMIN is required.")
-    public CategoryDto create(@RequestBody CreateCategoryRequest request) {
+    public CategoryDto create(@RequestBody @Valid CreateCategoryRequest request) {
         return categoryService.save(request).dto();
     }
 
@@ -78,7 +79,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
             @ApiResponse(responseCode = "404", description = "Category or any of it's records not found.")
     })
-    public CategoryDto update(@PathVariable Long id, @RequestBody CategoryDto request)
+    public CategoryDto update(@PathVariable Long id, @RequestBody @Valid CategoryDto request)
             throws CategoryNotFoundException {
         return categoryService.update(id, request).dto();
     }

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Authenticate existing user.", description = "Return Bearer token")
-    public AuthenticationResponse authenticate(@RequestBody AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(@RequestBody @Valid AuthenticationRequest request) {
         return authenticationService.authenticate(request);
     }
 
@@ -34,7 +35,8 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Register new user.", description = "Return Bearer token")
     @ApiResponses(value = { @ApiResponse(responseCode = "400", description = "User with this email already exists.") })
-    public AuthenticationResponse register(@RequestBody RegisterRequest request) throws UserAlreadyExistsException {
+    public AuthenticationResponse register(@RequestBody @Valid RegisterRequest request)
+            throws UserAlreadyExistsException {
         return authenticationService.register(request);
     }
 

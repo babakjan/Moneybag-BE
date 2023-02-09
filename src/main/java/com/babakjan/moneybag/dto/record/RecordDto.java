@@ -1,10 +1,11 @@
 package com.babakjan.moneybag.dto.record;
 
-import com.babakjan.moneybag.entity.Record;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -18,25 +19,16 @@ public class RecordDto {
 
     private Long amount;
 
+    @Size(min = 1, max = 20)
     private String label;
 
+    @Size(max = 20)
     private String note;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date date;
 
     private Long accountId;
 
     private Long categoryId;
-
-    public RecordDto(Record record) {
-        id = record.getId();
-        amount = record.getAmount();
-        label = record.getLabel();
-        note = record.getNote();
-        date = record.getDate();
-        accountId = record.getAccount().getId();
-        if (record.getCategory() != null) {
-            categoryId = record.getCategory().getId();
-        }
-    }
 }

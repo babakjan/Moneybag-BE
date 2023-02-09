@@ -1,6 +1,5 @@
 package com.babakjan.moneybag.dto.account;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,6 @@ public class AccountDto {
     @Size(max = 20)
     private String currency;
 
-    @NotNull
     private Long balance;
 
     @Pattern(
