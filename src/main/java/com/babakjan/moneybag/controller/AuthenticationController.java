@@ -3,6 +3,7 @@ package com.babakjan.moneybag.controller;
 import com.babakjan.moneybag.dto.auth.AuthenticationRequest;
 import com.babakjan.moneybag.dto.auth.AuthenticationResponse;
 import com.babakjan.moneybag.dto.auth.RegisterRequest;
+import com.babakjan.moneybag.exception.UserAlreadyExistsException;
 import com.babakjan.moneybag.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +29,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Register new user.", description = "Return Bearer token")
-    public AuthenticationResponse register(@RequestBody RegisterRequest request) {
+    public AuthenticationResponse register(@RequestBody RegisterRequest request) throws UserAlreadyExistsException {
         return authenticationService.register(request);
     }
 

@@ -73,7 +73,6 @@ public class AccountController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404", description = "Account or any of it's records not found.")
     })
     public AccountDto updateAccount(@RequestBody AccountDto request, @PathVariable Long id)

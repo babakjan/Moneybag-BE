@@ -2,7 +2,6 @@ package com.babakjan.moneybag.exception;
 
 public class CategoryNotFoundException extends Exception {
     public CategoryNotFoundException() {
-        super();
     }
 
     public CategoryNotFoundException(Long id) {

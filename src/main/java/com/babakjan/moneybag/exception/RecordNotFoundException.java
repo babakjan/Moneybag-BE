@@ -2,7 +2,6 @@ package com.babakjan.moneybag.exception;
 
 public class RecordNotFoundException extends Exception {
     public RecordNotFoundException() {
-        super();
     }
 
     public RecordNotFoundException(Long id) {

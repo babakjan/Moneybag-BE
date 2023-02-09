@@ -2,7 +2,6 @@ package com.babakjan.moneybag.exception;
 
 public class AccountNotFoundException extends Exception {
     public AccountNotFoundException() {
-        super();
     }
 
     public AccountNotFoundException(Long id) {

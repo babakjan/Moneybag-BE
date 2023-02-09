@@ -4,6 +4,7 @@ import com.babakjan.moneybag.dto.auth.AuthenticationRequest;
 import com.babakjan.moneybag.dto.auth.AuthenticationResponse;
 import com.babakjan.moneybag.dto.auth.RegisterRequest;
 import com.babakjan.moneybag.entity.User;
+import com.babakjan.moneybag.exception.UserAlreadyExistsException;
 import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,11 +24,13 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     //register new user
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request) throws UserAlreadyExistsException {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException(request.getEmail());
+        }
+
         var user = new User(request, passwordEncoder);
-
         userRepository.save(user);
-
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
