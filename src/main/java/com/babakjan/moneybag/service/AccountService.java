@@ -100,10 +100,6 @@ public class AccountService {
         if (id == null) {
             throw new AccountNotFoundException("Account id can't be null.");
         }
-        Optional<Account> optionalAccount = accountRepository.findById(id);
-        if (optionalAccount.isEmpty()) {
-            throw new AccountNotFoundException(id);
-        }
         accountRepository.deleteById(id);
     }
 

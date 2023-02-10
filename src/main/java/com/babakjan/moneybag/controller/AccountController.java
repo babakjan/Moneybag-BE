@@ -38,7 +38,7 @@ public class AccountController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Return all accounts.", description = "Role ADMIN is required.")
-    public List<AccountDto> getAccounts() {
+    public List<AccountDto> getAll() {
         return AccountService.accountsToDtos(accountService.getAll());
     }
 
@@ -61,7 +61,10 @@ public class AccountController {
     //delete by id
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Delete account by id.", description = "All records in this account will be also deleted! Role ADMIN is required")
+    @Operation(
+            summary = "Delete account by id.",
+            description = "All records in this account will be also deleted! Role ADMIN is required"
+    )
     public void deleteById(@PathVariable Long id) throws AccountNotFoundException {
         accountService.deleteById(id);
     }

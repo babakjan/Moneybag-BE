@@ -1,6 +1,7 @@
 package com.babakjan.moneybag.entity;
 
 import com.babakjan.moneybag.dto.auth.RegisterRequest;
+import com.babakjan.moneybag.dto.user.UserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -57,6 +59,19 @@ public class User implements UserDetails {
             }
         }
         accounts.add(account);
+    }
+
+    public UserDto dto() {
+        return UserDto.builder()
+                .id(id)
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .role(role)
+                .accountIds(accounts
+                        .stream().map(Account::getId)
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override

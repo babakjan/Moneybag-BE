@@ -8,6 +8,7 @@ import com.babakjan.moneybag.entity.Record;
 import com.babakjan.moneybag.exception.AccountNotFoundException;
 import com.babakjan.moneybag.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.exception.RecordNotFoundException;
+import com.babakjan.moneybag.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.RecordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ public class RecordService {
     private final AccountService accountService;
 
     private final CategoryService categoryService;
+
+    private final UserService userService;
 
     //get all
     public List<Record> getAll() {
@@ -58,7 +61,6 @@ public class RecordService {
 
         return record;
     }
-
 
     //update
     @Transactional
@@ -111,6 +113,13 @@ public class RecordService {
             throw new RecordNotFoundException(id);
         }
         recordRepository.deleteById(id);
+    }
+
+
+    //get records from user's accounts
+    public List<Record> getRecordsFromUsersAccounts(Long userId) throws UserNotFoundException {
+        userService.getById(userId); //check if user exists, if not exception is thrown
+        return recordRepository.filteredRecords(userId);
     }
 
     public static List<RecordDto> recordsToDto(List<Record> records) {

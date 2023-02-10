@@ -55,10 +55,6 @@ public class CategoryService {
         if (id == null) {
             throw new CategoryNotFoundException("Category id can't be null.");
         }
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
-        if (optionalCategory.isEmpty()) {
-            throw new CategoryNotFoundException(id);
-        }
         categoryRepository.deleteById(id);
     }
 
