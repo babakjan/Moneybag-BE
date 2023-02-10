@@ -1,6 +1,6 @@
 package com.babakjan.moneybag.entity;
 
-import com.babakjan.moneybag.dto.auth.RegisterRequest;
+import com.babakjan.moneybag.dto.user.RegisterRequest;
 import com.babakjan.moneybag.dto.user.UserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

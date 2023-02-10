@@ -2,12 +2,12 @@ package com.babakjan.moneybag.service;
 
 import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
+import com.babakjan.moneybag.dto.account.UpdateAccountRequest;
 import com.babakjan.moneybag.entity.Account;
 import com.babakjan.moneybag.entity.User;
 import com.babakjan.moneybag.exception.AccountNotFoundException;
 import com.babakjan.moneybag.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.AccountRepository;
-import com.babakjan.moneybag.repository.RecordRepository;
 import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 public class AccountService {
 
     private final AccountRepository accountRepository;
-
-    private final RecordRepository recordRepository;
 
     private final UserRepository userRepository;
 
@@ -64,31 +62,35 @@ public class AccountService {
     }
 
     //update
-    public Account update(Long id, AccountDto accountDTO) throws AccountNotFoundException {
+    public Account update(Long id, UpdateAccountRequest request) throws AccountNotFoundException, UserNotFoundException {
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
             throw new AccountNotFoundException("Account of id: " + id + " not found.");
         }
-        if (null != accountDTO.getName() && !"".equalsIgnoreCase(accountDTO.getName())) {
-            optionalAccount.get().setName(accountDTO.getName());
+        if (null != request.getName() && !"".equalsIgnoreCase(request.getName())) {
+            optionalAccount.get().setName(request.getName());
         }
-        if (null != accountDTO.getCurrency() && !"".equalsIgnoreCase(accountDTO.getCurrency())) {
-            optionalAccount.get().setCurrency(accountDTO.getCurrency());
+        if (null != request.getCurrency() && !"".equalsIgnoreCase(request.getCurrency())) {
+            optionalAccount.get().setCurrency(request.getCurrency());
         }
-        if (null != accountDTO.getBalance()) {
-            optionalAccount.get().setBalance(accountDTO.getBalance());
+        if (null != request.getBalance()) {
+            optionalAccount.get().setBalance(request.getBalance());
         }
-        if (null != accountDTO.getIcon() && !"".equalsIgnoreCase(accountDTO.getIcon())) {
-            optionalAccount.get().setIcon(accountDTO.getIcon());
+        if (null != request.getIcon() && !"".equalsIgnoreCase(request.getIcon())) {
+            optionalAccount.get().setIcon(request.getIcon());
         }
-        if (null != accountDTO.getColor() && !"".equalsIgnoreCase(accountDTO.getColor())) {
-            optionalAccount.get().setColor(accountDTO.getColor());
+        if (null != request.getColor() && !"".equalsIgnoreCase(request.getColor())) {
+            optionalAccount.get().setColor(request.getColor());
         }
-        if (null != accountDTO.getIncludeInStatistic()) {
-            optionalAccount.get().setIncludeInStatistic(accountDTO.getIncludeInStatistic());
+        if (null != request.getIncludeInStatistic()) {
+            optionalAccount.get().setIncludeInStatistic(request.getIncludeInStatistic());
         }
-        if (null != accountDTO.getRecordIds()) {
-            optionalAccount.get().setRecords(recordRepository.findAllById(accountDTO.getRecordIds()));
+        if (null != request.getUserId()) {
+            Optional<User> optionalUser = userRepository.findById(request.getUserId());
+            if (optionalUser.isEmpty()) {
+                throw new UserNotFoundException(request.getUserId());
+            }
+            optionalAccount.get().setUser(optionalUser.get());
         }
 
         accountRepository.save(optionalAccount.get());

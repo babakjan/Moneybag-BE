@@ -1,8 +1,8 @@
 package com.babakjan.moneybag.service;
 
-import com.babakjan.moneybag.dto.auth.AuthenticationRequest;
-import com.babakjan.moneybag.dto.auth.AuthenticationResponse;
-import com.babakjan.moneybag.dto.auth.RegisterRequest;
+import com.babakjan.moneybag.dto.user.AuthenticationRequest;
+import com.babakjan.moneybag.dto.user.AuthenticationResponse;
+import com.babakjan.moneybag.dto.user.RegisterRequest;
 import com.babakjan.moneybag.entity.User;
 import com.babakjan.moneybag.exception.UserAlreadyExistsException;
 import com.babakjan.moneybag.repository.UserRepository;

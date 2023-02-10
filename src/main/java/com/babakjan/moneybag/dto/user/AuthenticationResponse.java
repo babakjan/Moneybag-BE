@@ -1,4 +1,4 @@
-package com.babakjan.moneybag.dto.auth;
+package com.babakjan.moneybag.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

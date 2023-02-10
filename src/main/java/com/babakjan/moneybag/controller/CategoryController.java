@@ -2,6 +2,7 @@ package com.babakjan.moneybag.controller;
 
 import com.babakjan.moneybag.dto.category.CategoryDto;
 import com.babakjan.moneybag.dto.category.CreateCategoryRequest;
+import com.babakjan.moneybag.dto.category.UpdateCategoryRequest;
 import com.babakjan.moneybag.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -79,7 +80,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
             @ApiResponse(responseCode = "404", description = "Category or any of it's records not found.")
     })
-    public CategoryDto update(@PathVariable Long id, @RequestBody @Valid CategoryDto request)
+    public CategoryDto update(@PathVariable Long id, @RequestBody @Valid UpdateCategoryRequest request)
             throws CategoryNotFoundException {
         return categoryService.update(id, request).dto();
     }

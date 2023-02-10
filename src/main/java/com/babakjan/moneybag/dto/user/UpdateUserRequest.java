@@ -1,7 +1,9 @@
-package com.babakjan.moneybag.dto.auth;
+package com.babakjan.moneybag.dto.user;
 
+import com.babakjan.moneybag.entity.Role;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,21 +14,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class UpdateUserRequest {
 
-    @NotNull
-    @Size(min = 1, max = 20)
+    private Long id;
+
+    @Size(max = 20)
     private String firstName;
 
-    @NotNull
-    @Size(min = 1, max = 20)
+    @Size(max = 20)
     private String lastName;
 
-    @NotNull
     @Email
     private String email;
 
-    @NotNull
-    @Size(min = 8, max = 25)
-    private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

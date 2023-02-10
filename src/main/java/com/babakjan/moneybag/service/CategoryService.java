@@ -2,11 +2,10 @@ package com.babakjan.moneybag.service;
 
 import com.babakjan.moneybag.dto.category.CategoryDto;
 import com.babakjan.moneybag.dto.category.CreateCategoryRequest;
+import com.babakjan.moneybag.dto.category.UpdateCategoryRequest;
 import com.babakjan.moneybag.entity.Category;
-import com.babakjan.moneybag.entity.Record;
 import com.babakjan.moneybag.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.repository.CategoryRepository;
-import com.babakjan.moneybag.repository.RecordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,8 +19,6 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-
-    private final RecordRepository recordRepository;
 
     //get all
     public List<Category> getAll() {
@@ -60,25 +57,17 @@ public class CategoryService {
 
     //update
     @Transactional
-    public Category update(Long id, CategoryDto categoryDto) throws CategoryNotFoundException {
+    public Category update(Long id, UpdateCategoryRequest request) throws CategoryNotFoundException {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
         if (optionalCategory.isEmpty()) {
             throw new CategoryNotFoundException(id);
         }
 
-        if (null != categoryDto.getName() && !"".equalsIgnoreCase(categoryDto.getName())) {
-            optionalCategory.get().setName(categoryDto.getName());
+        if (null != request.getName() && !"".equalsIgnoreCase(request.getName())) {
+            optionalCategory.get().setName(request.getName());
         }
-        if (null != categoryDto.getIcon() && !"".equalsIgnoreCase(categoryDto.getIcon())) {
-            optionalCategory.get().setIcon(categoryDto.getIcon());
-        }
-        if (null != categoryDto.getRecordIds()) {
-            List<Record> records = recordRepository.findAllById(categoryDto.getRecordIds());
-
-            for (Record record : records) {
-                record.setCategory(optionalCategory.get());
-                optionalCategory.get().addRecord(record);
-            }
+        if (null != request.getIcon() && !"".equalsIgnoreCase(request.getIcon())) {
+            optionalCategory.get().setIcon(request.getIcon());
         }
 
         return categoryRepository.save(optionalCategory.get());

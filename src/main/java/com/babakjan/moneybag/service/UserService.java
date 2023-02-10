@@ -1,5 +1,6 @@
 package com.babakjan.moneybag.service;
 
+import com.babakjan.moneybag.dto.user.UpdateUserRequest;
 import com.babakjan.moneybag.dto.user.UserDto;
 import com.babakjan.moneybag.entity.User;
 import com.babakjan.moneybag.exception.UserNotFoundException;
@@ -37,6 +38,28 @@ public class UserService {
             throw new UserNotFoundException("User's id can't be null.");
         }
         userRepository.deleteById(id);
+    }
+
+    public User update(Long id, UpdateUserRequest request) throws UserNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException(id);
+        }
+
+        if (null != request.getFirstName() && !"".equalsIgnoreCase(request.getFirstName())) {
+            optionalUser.get().setFirstName(request.getFirstName());
+        }
+        if (null != request.getLastName() && !"".equalsIgnoreCase(request.getLastName())) {
+            optionalUser.get().setLastName(request.getLastName());
+        }
+        if (null != request.getEmail() && !"".equalsIgnoreCase(request.getEmail())) {
+            optionalUser.get().setEmail(request.getEmail());
+        }
+        if (null != request.getRole()) {
+            optionalUser.get().setRole(request.getRole());
+        }
+        userRepository.save(optionalUser.get());
+        return optionalUser.get();
     }
 
     public static List<UserDto> usersToDtos(List<User> users) {

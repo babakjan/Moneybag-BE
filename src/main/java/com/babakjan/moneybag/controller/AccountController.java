@@ -2,6 +2,7 @@ package com.babakjan.moneybag.controller;
 
 import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
+import com.babakjan.moneybag.dto.account.UpdateAccountRequest;
 import com.babakjan.moneybag.exception.AccountNotFoundException;
 import com.babakjan.moneybag.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.AccountService;
@@ -80,8 +81,8 @@ public class AccountController {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
             @ApiResponse(responseCode = "404", description = "Account or any of it's records not found.")
     })
-    public AccountDto updateAccount(@RequestBody @Valid AccountDto request, @PathVariable Long id)
-            throws AccountNotFoundException {
+    public AccountDto updateAccount(@RequestBody @Valid UpdateAccountRequest request, @PathVariable Long id)
+            throws AccountNotFoundException, UserNotFoundException {
         return accountService.update(id, request).dto();
     }
 }

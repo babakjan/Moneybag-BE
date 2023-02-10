@@ -1,8 +1,8 @@
 package com.babakjan.moneybag.controller;
 
-import com.babakjan.moneybag.dto.auth.AuthenticationRequest;
-import com.babakjan.moneybag.dto.auth.AuthenticationResponse;
-import com.babakjan.moneybag.dto.auth.RegisterRequest;
+import com.babakjan.moneybag.dto.user.AuthenticationRequest;
+import com.babakjan.moneybag.dto.user.AuthenticationResponse;
+import com.babakjan.moneybag.dto.user.RegisterRequest;
 import com.babakjan.moneybag.exception.UserAlreadyExistsException;
 import com.babakjan.moneybag.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
