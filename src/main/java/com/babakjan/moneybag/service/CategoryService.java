@@ -4,7 +4,7 @@ import com.babakjan.moneybag.dto.category.CategoryDto;
 import com.babakjan.moneybag.dto.category.CreateCategoryRequest;
 import com.babakjan.moneybag.dto.category.UpdateCategoryRequest;
 import com.babakjan.moneybag.entity.Category;
-import com.babakjan.moneybag.exception.CategoryNotFoundException;
+import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

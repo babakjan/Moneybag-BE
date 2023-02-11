@@ -3,7 +3,8 @@ package com.babakjan.moneybag.controller;
 import com.babakjan.moneybag.dto.category.CategoryDto;
 import com.babakjan.moneybag.dto.category.CreateCategoryRequest;
 import com.babakjan.moneybag.dto.category.UpdateCategoryRequest;
-import com.babakjan.moneybag.exception.CategoryNotFoundException;
+import com.babakjan.moneybag.entity.ErrorMessage;
+import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,15 +21,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping(value = "/categories", produces = "application/json")
 @RequiredArgsConstructor
 @Tag(name = "Category", description = "Category of record.")
 @SecurityRequirement(name = "bearer-key")
-@ApiResponses(value = {
+@ApiResponses({
         @ApiResponse(
                 responseCode = "403",
-                description = "Forbidden",
-                content = {@Content( mediaType = "application/json", schema = @Schema()) })
+                description = "Forbidden. Role ADMIN is required.",
+                content = @Content
+        ),
+        @ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized. Authentication is required.",
+                content = @Content
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+        )
 })
 public class CategoryController {
 
@@ -78,7 +90,11 @@ public class CategoryController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
-            @ApiResponse(responseCode = "404", description = "Category or any of it's records not found.")
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Category not found.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+            )
     })
     public CategoryDto update(@PathVariable Long id, @RequestBody @Valid UpdateCategoryRequest request)
             throws CategoryNotFoundException {

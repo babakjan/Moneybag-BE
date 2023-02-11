@@ -4,7 +4,7 @@ import com.babakjan.moneybag.dto.user.AuthenticationRequest;
 import com.babakjan.moneybag.dto.user.AuthenticationResponse;
 import com.babakjan.moneybag.dto.user.RegisterRequest;
 import com.babakjan.moneybag.entity.User;
-import com.babakjan.moneybag.exception.UserAlreadyExistsException;
+import com.babakjan.moneybag.error.exception.UserAlreadyExistsException;
 import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

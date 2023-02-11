@@ -2,6 +2,8 @@ package com.babakjan.moneybag.config;
 
 import com.babakjan.moneybag.authentication.JwtAuthenticationFilter;
 import com.babakjan.moneybag.entity.Role;
+import com.babakjan.moneybag.error.handler.CustomAccessDeniedHandler;
+import com.babakjan.moneybag.error.handler.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,21 +41,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf()
-                .disable()
-                .authorizeHttpRequests()
-                .requestMatchers(noAuthPaths)
-                .permitAll()
-                .requestMatchers(adminPaths)
-                .hasAuthority(Role.ADMIN.name())
-                .anyRequest()
-                .authenticated()
+                    .csrf()
+                    .disable()
+                    .authorizeHttpRequests()
+                    .requestMatchers(noAuthPaths)
+                    .permitAll()
+                    .requestMatchers(adminPaths)
+                    .hasAuthority(Role.ADMIN.name())
+                    .anyRequest()
+                    .authenticated()
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) //not saves session
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS) //not saves session
                 .and()
-                .authenticationProvider(authenticationProvider) //set custom user details service
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                    .authenticationProvider(authenticationProvider) //set custom user details service
+                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                    .exceptionHandling()
+                    .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                    .accessDeniedHandler(new CustomAccessDeniedHandler());
 
         return httpSecurity.build();
     }

@@ -2,9 +2,10 @@ package com.babakjan.moneybag.controller;
 
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
-import com.babakjan.moneybag.exception.AccountNotFoundException;
-import com.babakjan.moneybag.exception.CategoryNotFoundException;
-import com.babakjan.moneybag.exception.RecordNotFoundException;
+import com.babakjan.moneybag.entity.ErrorMessage;
+import com.babakjan.moneybag.error.exception.AccountNotFoundException;
+import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
+import com.babakjan.moneybag.error.exception.RecordNotFoundException;
 import com.babakjan.moneybag.service.RecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,14 +23,25 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/records")
+@RequestMapping(value = "/records", produces = "application/json")
 @Tag(name = "Record", description = "Record of financial transaction")
 @SecurityRequirement(name = "bearer-key")
 @ApiResponses(value = {
         @ApiResponse(
                 responseCode = "403",
-                description = "Forbidden",
-                content = {@Content( mediaType = "application/json", schema = @Schema()) })
+                description = "Forbidden. Role ADMIN is required.",
+                content = @Content
+        ),
+        @ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized. Authentication is required.",
+                content = @Content
+        ),
+        @ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+        )
 })
 public class RecordController {
 
@@ -55,6 +67,13 @@ public class RecordController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create new record.", description = "Role ADMIN is required.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Category or account not found.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+            )
+    })
     public RecordDto create(@RequestBody @Valid CreateRecordRequest request)
             throws CategoryNotFoundException, AccountNotFoundException {
         return recordService.save(request).dto();
@@ -77,7 +96,11 @@ public class RecordController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
-            @ApiResponse(responseCode = "404", description = "Category or account not found.")
+            @ApiResponse(
+                responseCode = "404",
+                description = "Record, category or account not found.",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+            )
     })
     public RecordDto update(@PathVariable Long id, @RequestBody @Valid RecordDto request)
             throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException {

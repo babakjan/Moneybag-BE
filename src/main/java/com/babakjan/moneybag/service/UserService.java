@@ -3,7 +3,7 @@ package com.babakjan.moneybag.service;
 import com.babakjan.moneybag.dto.user.UpdateUserRequest;
 import com.babakjan.moneybag.dto.user.UserDto;
 import com.babakjan.moneybag.entity.User;
-import com.babakjan.moneybag.exception.UserNotFoundException;
+import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

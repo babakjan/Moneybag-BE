@@ -3,8 +3,9 @@ package com.babakjan.moneybag.controller;
 import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import com.babakjan.moneybag.dto.account.UpdateAccountRequest;
-import com.babakjan.moneybag.exception.AccountNotFoundException;
-import com.babakjan.moneybag.exception.UserNotFoundException;
+import com.babakjan.moneybag.entity.ErrorMessage;
+import com.babakjan.moneybag.error.exception.AccountNotFoundException;
+import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,15 +22,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping(value = "/accounts", produces = "application/json")
 @RequiredArgsConstructor
 @Tag(name = "Account", description = "Financial account")
 @SecurityRequirement(name = "bearer-key")
-@ApiResponses(value = {
+@ApiResponses({
         @ApiResponse(
                 responseCode = "403",
-                description = "Forbidden",
-                content = {@Content( mediaType = "application/json", schema = @Schema()) })
+                description = "Forbidden. Role ADMIN is required.",
+                content = @Content
+        ),
+        @ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized. Authentication is required.",
+                content = @Content
+        ),
+        @ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+        )
 })
 public class AccountController {
 
@@ -64,7 +76,7 @@ public class AccountController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Delete account by id.",
-            description = "All records in this account will be also deleted! Role ADMIN is required"
+            description = "All records in this account will be also deleted! Role ADMIN is required."
     )
     public void deleteById(@PathVariable Long id) throws AccountNotFoundException {
         accountService.deleteById(id);
@@ -79,7 +91,11 @@ public class AccountController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
-            @ApiResponse(responseCode = "404", description = "Account or any of it's records not found.")
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Account or any of it's records not found.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+            )
     })
     public AccountDto updateAccount(@RequestBody @Valid UpdateAccountRequest request, @PathVariable Long id)
             throws AccountNotFoundException, UserNotFoundException {

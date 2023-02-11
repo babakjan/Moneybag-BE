@@ -5,9 +5,10 @@ import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.user.UpdateUserRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
 import com.babakjan.moneybag.dto.user.UserDto;
+import com.babakjan.moneybag.entity.ErrorMessage;
 import com.babakjan.moneybag.entity.Role;
 import com.babakjan.moneybag.entity.User;
-import com.babakjan.moneybag.exception.UserNotFoundException;
+import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.AccountService;
 import com.babakjan.moneybag.service.RecordService;
 import com.babakjan.moneybag.service.UserService;
@@ -21,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,15 +30,26 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(value = "/users", produces = "application/json")
 @RequiredArgsConstructor
 @Tag(name = "User", description = "User information")
 @SecurityRequirement(name = "bearer-key")
-@ApiResponses(value = {
+@ApiResponses({
         @ApiResponse(
                 responseCode = "401",
                 description = "Unauthorized. Authentication is required.",
-                content = {@Content(schema = @Schema())})
+                content = @Content
+        ),
+        @ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+        ),
+        @ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+        )
 })
 public class UserController {
 
@@ -51,6 +64,13 @@ public class UserController {
     @Secured({"ADMIN"})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Return all users.", description = "Role ADMIN is required.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden. Role ADMIN is required.",
+                    content = @Content
+            ),
+    })
     public List<UserDto> getAll() {
         return UserService.usersToDtos(userService.getAll());
     }
@@ -62,6 +82,13 @@ public class UserController {
             summary = "Return user by id.",
             description = "Role ADMIN can get all users. Role USER can get only self."
     )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden. Role ADMIN can get all users. Role USER can get only self.",
+                    content = @Content
+            ),
+    })
     public UserDto getById(@PathVariable Long id) throws UserNotFoundException {
         //admin has access to all users
         if (authenticationFacadeInterface.isAdmin()) {
@@ -78,6 +105,13 @@ public class UserController {
             description = "All accounts and records of this user will be also deleted! Role ADMIN can delete all " +
                     "accounts. Role USER can delete only self."
     )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden. Role ADMIN can get all users. Role USER can delete only self.",
+                    content = @Content
+            ),
+    })
     public void deleteById(@PathVariable Long id) throws UserNotFoundException {
         if (authenticationFacadeInterface.isAdmin()) {
             userService.deleteById(id);
@@ -96,8 +130,12 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
-            @ApiResponse(responseCode = "403", description = "Forbidden. When hasn't role ADMIN and trying update " +
-                    "other or when user hasn't role ADMIN and trying set it's role to ADMIN."),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden. When hasn't role ADMIN and trying update other or when user hasn't " +
+                            "role ADMIN and trying set it's role to ADMIN.",
+                    content = @Content
+            ),
     })
     public UserDto update(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest request)
             throws UserNotFoundException {
@@ -118,6 +156,13 @@ public class UserController {
             summary = "Return user's accounts by user id.",
             description = "Role ADMIN is required or parameter id must belong to authenticated user."
     )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden. Role ADMIN can get all users. Role USER can get only self accounts.",
+                    content = @Content
+            ),
+    })
     public List<AccountDto> getAccountsByUserId(@PathVariable Long id) throws UserNotFoundException {
         if (authenticationFacadeInterface.isAdmin()) {
             return AccountService.accountsToDtos(userService.getById(id).getAccounts());
@@ -132,6 +177,13 @@ public class UserController {
             summary = "Return all records from user's accounts by user id.",
             description = "Role ADMIN is required or parameter id must belong to authenticated user."
     )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden. Role ADMIN can get all users. Role USER can get only self records.",
+                    content = @Content
+            ),
+    })
     public List<RecordDto> getRecordsByUserId(@PathVariable Long id) throws UserNotFoundException {
         if (authenticationFacadeInterface.isAdmin()) {
             return RecordService.recordsToDto(recordService.getRecordsFromUsersAccounts(id));
@@ -143,7 +195,7 @@ public class UserController {
         User user = userService.getById(id);
         if (authenticationFacadeInterface.getAuthentication() == null
                 || !user.getEmail().equals(authenticationFacadeInterface.getAuthentication().getName())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new AccessDeniedException("Access denied.");
         }
         return user;
     }

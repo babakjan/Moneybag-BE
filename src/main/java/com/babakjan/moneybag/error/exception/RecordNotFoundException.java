@@ -1,4 +1,4 @@
-package com.babakjan.moneybag.exception;
+package com.babakjan.moneybag.error.exception;
 
 public class RecordNotFoundException extends Exception {
     public RecordNotFoundException() {
