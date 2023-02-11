@@ -107,7 +107,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Delete user by id.",
-            description = "All accounts and records of this user will be also deleted! Role ADMIN can delete all " +
+            description = "All accounts and its records of this user will be also deleted! Role ADMIN can delete all " +
                     "accounts. Role USER can delete only self."
     )
     @ApiResponses({

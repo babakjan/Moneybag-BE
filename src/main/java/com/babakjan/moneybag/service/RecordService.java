@@ -56,6 +56,7 @@ public class RecordService {
         }
 
         Record record = recordRepository.save(new Record(request, account, category));
+        account.setBalance(account.getBalance() + record.getAmount()); //update balance
         accountService.save(account);
         categoryService.save(category);
 
@@ -94,7 +95,13 @@ public class RecordService {
             optionalRecord.get().setNote(recordDto.getNote());
         }
         if (null != recordDto.getAmount()) {
+            optionalRecord.get().getAccount().setBalance(
+                    optionalRecord.get().getAccount().getBalance() - optionalRecord.get().getAmount()
+            );
             optionalRecord.get().setAmount(recordDto.getAmount());
+            optionalRecord.get().getAccount().setBalance(
+                    optionalRecord.get().getAccount().getBalance() + optionalRecord.get().getAmount()
+            );
         }
         if (null != recordDto.getDate()) {
             optionalRecord.get().setDate(recordDto.getDate());
@@ -112,6 +119,9 @@ public class RecordService {
         if (optionalRecord.isEmpty()) {
             throw new RecordNotFoundException(id);
         }
+        optionalRecord.get().getAccount().setBalance(
+                optionalRecord.get().getAccount().getBalance() - optionalRecord.get().getAmount()
+        );
         recordRepository.deleteById(id);
     }
 
