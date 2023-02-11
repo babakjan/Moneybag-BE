@@ -175,6 +175,9 @@ public class UserController {
     })
     public List<AccountDto> getAccountsByUserId(@PathVariable Long id, @RequestParam @Nullable Boolean withIncomesAndExpenses)
             throws UserNotFoundException {
+        if (withIncomesAndExpenses == null) {
+            withIncomesAndExpenses = false;
+        }
         if (authenticationFacadeInterface.isAdmin()) {
             if (withIncomesAndExpenses) {
                 return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
