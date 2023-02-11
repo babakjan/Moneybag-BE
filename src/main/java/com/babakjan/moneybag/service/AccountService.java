@@ -4,6 +4,7 @@ import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import com.babakjan.moneybag.dto.account.UpdateAccountRequest;
 import com.babakjan.moneybag.entity.Account;
+import com.babakjan.moneybag.entity.Record;
 import com.babakjan.moneybag.entity.User;
 import com.babakjan.moneybag.error.exception.AccountNotFoundException;
 import com.babakjan.moneybag.error.exception.UserNotFoundException;
@@ -12,6 +13,8 @@ import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +43,43 @@ public class AccountService {
         }
 
         return optionalAccount.get();
+    }
+
+    //get all accounts by user id with incomes and expenses from current month
+    public List<AccountDto> getByAllByUserIdWithThisMontIncomesAndExpenses(Long userId) throws UserNotFoundException {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException(userId);
+        }
+        List<Account> accounts = optionalUser.get().getAccounts();
+        List<AccountDto> accountsDtos = AccountService.accountsToDtos(accounts);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        Date startingDate = calendar.getTime();
+
+        for (int i = 0; i < accounts.size(); i++) {
+            List<Record> records = accounts.get(i).getRecords()
+                    .stream().filter(record -> record.getDate().after(startingDate)).toList();
+
+            long incomes = 0L;
+            long expenses = 0L;
+
+            for (Record record : records) {
+                if (record.getAmount() < 0) {
+                    expenses += record.getAmount();
+                } else {
+                    incomes += record.getAmount();
+                }
+            }
+            accountsDtos.get(i).setIncomes(incomes);
+            accountsDtos.get(i).setExpenses(expenses);
+        }
+
+        return accountsDtos;
     }
 
     //create

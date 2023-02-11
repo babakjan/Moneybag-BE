@@ -38,4 +38,8 @@ public class AccountDto {
     private List<Long> recordIds;
 
     private Long userId;
+
+    Long incomes = null;
+
+    Long expenses = null;
 }

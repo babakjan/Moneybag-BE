@@ -13,12 +13,15 @@ import com.babakjan.moneybag.service.AccountService;
 import com.babakjan.moneybag.service.RecordService;
 import com.babakjan.moneybag.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,6 +59,8 @@ public class UserController {
     private final UserService userService;
 
     private final RecordService recordService;
+
+    private final AccountService accountService;
 
     private final AuthenticationFacadeInterface authenticationFacadeInterface;
 
@@ -156,6 +161,11 @@ public class UserController {
             summary = "Return user's accounts by user id.",
             description = "Role ADMIN is required or parameter id must belong to authenticated user."
     )
+    @Parameter(
+            in = ParameterIn.QUERY,
+            name = "withIncomesAndExpenses",
+            description = "If true, compute incomes and expenses from current month."
+    )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "403",
@@ -163,9 +173,16 @@ public class UserController {
                     content = @Content
             ),
     })
-    public List<AccountDto> getAccountsByUserId(@PathVariable Long id) throws UserNotFoundException {
+    public List<AccountDto> getAccountsByUserId(@PathVariable Long id, @RequestParam @Nullable Boolean withIncomesAndExpenses)
+            throws UserNotFoundException {
         if (authenticationFacadeInterface.isAdmin()) {
+            if (withIncomesAndExpenses) {
+                return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
+            }
             return AccountService.accountsToDtos(userService.getById(id).getAccounts());
+        }
+        if (withIncomesAndExpenses) {
+            return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
         }
         return AccountService.accountsToDtos(checkIfRequestingSelf(id).getAccounts());
     }

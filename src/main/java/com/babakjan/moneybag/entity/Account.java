@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "accounts")
@@ -72,10 +71,7 @@ public class Account {
                 .icon(icon)
                 .includeInStatistic(includeInStatistic)
                 .userId(user != null ? user.getId() : null)
-                .recordIds(records
-                        .stream().map(Record::getId)
-                        .collect(Collectors.toList())
-                )
+                .recordIds(records.stream().map(Record::getId).toList())
                 .build();
     }
 
