@@ -48,7 +48,8 @@ public class RecordService {
     }
 
     //create
-    public Record save(CreateRecordRequest request) throws AccountNotFoundException, CategoryNotFoundException {
+    public Record save(CreateRecordRequest request)
+            throws AccountNotFoundException, CategoryNotFoundException, UserNotFoundException {
         Account account = accountService.getById(request.getAccountId());
         Category category = null;
         if (request.getCategoryId() != null) {
@@ -66,7 +67,7 @@ public class RecordService {
     //update
     @Transactional
     public Record update(Long id, RecordDto recordDto)
-            throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException {
+            throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException, UserNotFoundException {
         //find data
         Optional<Record> optionalRecord = recordRepository.findById(id);
         if (optionalRecord.isEmpty()) {

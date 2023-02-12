@@ -33,7 +33,6 @@ public class SecurityConfig {
     };
 
     private final String[] adminPaths = {
-            "/accounts/**",
             "/categories/**",
             "/records/**"
     };

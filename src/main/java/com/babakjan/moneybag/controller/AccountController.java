@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
 @ApiResponses({
         @ApiResponse(
                 responseCode = "403",
-                description = "Forbidden. Role ADMIN is required.",
+                description = "Forbidden. Role USER tries to access or manipulate not their data.",
                 content = @Content
         ),
         @ApiResponse(
@@ -50,6 +51,7 @@ public class AccountController {
     //get all
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
     @Operation(summary = "Return all accounts.", description = "Role ADMIN is required.")
     public List<AccountDto> getAll() {
         return AccountService.accountsToDtos(accountService.getAll());
@@ -59,7 +61,7 @@ public class AccountController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Return account by id.", description = "Role ADMIN is required.")
-    public AccountDto getAccountById(@PathVariable Long id) throws AccountNotFoundException {
+    public AccountDto getAccountById(@PathVariable Long id) throws AccountNotFoundException, UserNotFoundException {
         return accountService.getById(id).dto();
     }
 
@@ -78,7 +80,7 @@ public class AccountController {
             summary = "Delete account by id.",
             description = "All records in this account will be also deleted! Role ADMIN is required."
     )
-    public void deleteById(@PathVariable Long id) throws AccountNotFoundException {
+    public void deleteById(@PathVariable Long id) throws AccountNotFoundException, UserNotFoundException {
         accountService.deleteById(id);
     }
 

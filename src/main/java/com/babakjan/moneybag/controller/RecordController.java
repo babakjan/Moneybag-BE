@@ -6,6 +6,7 @@ import com.babakjan.moneybag.entity.ErrorMessage;
 import com.babakjan.moneybag.error.exception.AccountNotFoundException;
 import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.error.exception.RecordNotFoundException;
+import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.RecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -75,7 +76,7 @@ public class RecordController {
             )
     })
     public RecordDto create(@RequestBody @Valid CreateRecordRequest request)
-            throws CategoryNotFoundException, AccountNotFoundException {
+            throws CategoryNotFoundException, AccountNotFoundException, UserNotFoundException {
         return recordService.save(request).dto();
     }
 
@@ -103,7 +104,7 @@ public class RecordController {
             )
     })
     public RecordDto update(@PathVariable Long id, @RequestBody @Valid RecordDto request)
-            throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException {
+            throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException, UserNotFoundException {
         return recordService.update(id, request).dto();
     }
 }

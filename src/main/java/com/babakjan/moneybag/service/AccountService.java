@@ -1,5 +1,6 @@
 package com.babakjan.moneybag.service;
 
+import com.babakjan.moneybag.authentication.AuthenticationFacadeInterface;
 import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import com.babakjan.moneybag.dto.account.UpdateAccountRequest;
@@ -11,12 +12,10 @@ import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.AccountRepository;
 import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,13 +26,17 @@ public class AccountService {
 
     private final UserRepository userRepository;
 
+    private final AuthenticationService authenticationService;
+
+    private final AuthenticationFacadeInterface authenticationFacadeInterface;
+
     //get all
     public List<Account> getAll() {
         return accountRepository.findAll();
     }
 
     //get by id
-    public Account getById(Long id) throws AccountNotFoundException {
+    public Account getById(Long id) throws AccountNotFoundException, UserNotFoundException {
         if (id == null) {
             throw new AccountNotFoundException("Account id can't be null.");
         }
@@ -42,11 +45,17 @@ public class AccountService {
             throw new AccountNotFoundException(id);
         }
 
+        if (authenticationService.isNotAdminOrSelfRequest(optionalAccount.get().getUser().getId())) {
+            throw new AccessDeniedException("Access denied.");
+        }
         return optionalAccount.get();
     }
 
     //get all accounts by user id with incomes and expenses from current month
     public List<AccountDto> getByAllByUserIdWithThisMontIncomesAndExpenses(Long userId) throws UserNotFoundException {
+        if (authenticationService.isNotAdminOrSelfRequest(userId)) {
+            throw new AccessDeniedException("Access denied.");
+        }
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException(userId);
@@ -84,8 +93,8 @@ public class AccountService {
 
     //create
     public Account save(CreateAccountRequest request) throws UserNotFoundException {
-        if (request.getUserId() == null) {
-            System.out.println("USER ID IS NULL");
+        if (authenticationService.isNotAdminOrSelfRequest(request.getUserId())) {
+            throw new AccessDeniedException("Access denied.");
         }
         Optional<User> optionalUser = userRepository.findById(request.getUserId());
         if (optionalUser.isEmpty()) {
@@ -106,6 +115,16 @@ public class AccountService {
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
             throw new AccountNotFoundException("Account of id: " + id + " not found.");
+        }
+        //if signed user is not admin or trying update not their account.
+        if (authenticationService.isNotAdminOrSelfRequest(optionalAccount.get().getUser().getId())) {
+            throw new AccessDeniedException("Access denied.");
+        }
+        //if signed user is not admin and trying change user of account
+        if (request.getUserId() != null
+                && !request.getUserId().equals(optionalAccount.get().getUser().getId())
+                && !authenticationFacadeInterface.isAdmin()) {
+            throw new AccessDeniedException("Access denied.");
         }
         if (null != request.getName() && !"".equalsIgnoreCase(request.getName())) {
             optionalAccount.get().setName(request.getName());
@@ -138,11 +157,17 @@ public class AccountService {
     }
 
     //delete by id
-    public void deleteById(Long id) throws AccountNotFoundException {
-        if (id == null) {
+    public void deleteById(Long accountId) throws AccountNotFoundException, AccessDeniedException, UserNotFoundException {
+        if (accountId == null) {
             throw new AccountNotFoundException("Account id can't be null.");
         }
-        accountRepository.deleteById(id);
+
+        Optional<Account> optionalAccount = accountRepository.findById(accountId);
+        if (optionalAccount.isPresent()
+                && authenticationService.isNotAdminOrSelfRequest(optionalAccount.get().getUser().getId())) {
+            throw new AccessDeniedException("User tried to delete account of other user.");
+        }
+        accountRepository.deleteById(accountId);
     }
 
     public static List<AccountDto> accountsToDtos(List<Account> accounts) {

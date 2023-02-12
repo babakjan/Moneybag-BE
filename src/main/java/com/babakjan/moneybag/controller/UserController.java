@@ -39,14 +39,19 @@ import java.util.List;
 @SecurityRequirement(name = "bearer-key")
 @ApiResponses({
         @ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+        ),
+        @ApiResponse(
                 responseCode = "401",
                 description = "Unauthorized. Authentication is required.",
                 content = @Content
         ),
         @ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                responseCode = "403",
+                description = "Forbidden. Role USER tries to access or manipulate not their data.",
+                content = @Content
         ),
         @ApiResponse(
                 responseCode = "404",
@@ -69,13 +74,6 @@ public class UserController {
     @Secured({"ADMIN"})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Return all users.", description = "Role ADMIN is required.")
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden. Role ADMIN is required.",
-                    content = @Content
-            ),
-    })
     public List<UserDto> getAll() {
         return UserService.usersToDtos(userService.getAll());
     }
@@ -87,13 +85,6 @@ public class UserController {
             summary = "Return user by id.",
             description = "Role ADMIN can get all users. Role USER can get only self."
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden. Role ADMIN can get all users. Role USER can get only self.",
-                    content = @Content
-            ),
-    })
     public UserDto getById(@PathVariable Long id) throws UserNotFoundException {
         //admin has access to all users
         if (authenticationFacadeInterface.isAdmin()) {
@@ -110,13 +101,6 @@ public class UserController {
             description = "All accounts and its records of this user will be also deleted! Role ADMIN can delete all " +
                     "accounts. Role USER can delete only self."
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden. Role ADMIN can get all users. Role USER can delete only self.",
-                    content = @Content
-            ),
-    })
     public void deleteById(@PathVariable Long id) throws UserNotFoundException {
         if (authenticationFacadeInterface.isAdmin()) {
             userService.deleteById(id);
@@ -133,15 +117,6 @@ public class UserController {
                     "update all users and can set role ADMIN to all users. Role USER can update only self and can't " +
                     "set role ADMIN."
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully updated."),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden. When hasn't role ADMIN and trying update other or when user hasn't " +
-                            "role ADMIN and trying set it's role to ADMIN.",
-                    content = @Content
-            ),
-    })
     public UserDto update(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest request)
             throws UserNotFoundException {
         if (authenticationFacadeInterface.isAdmin()) {
@@ -166,13 +141,6 @@ public class UserController {
             name = "withIncomesAndExpenses",
             description = "If true, compute incomes and expenses from current month."
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden. Role ADMIN can get all users. Role USER can get only self accounts.",
-                    content = @Content
-            ),
-    })
     public List<AccountDto> getAccountsByUserId(@PathVariable Long id, @RequestParam @Nullable Boolean withIncomesAndExpenses)
             throws UserNotFoundException {
         if (withIncomesAndExpenses == null) {
@@ -197,13 +165,6 @@ public class UserController {
             summary = "Return all records from user's accounts by user id.",
             description = "Role ADMIN is required or parameter id must belong to authenticated user."
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden. Role ADMIN can get all users. Role USER can get only self records.",
-                    content = @Content
-            ),
-    })
     public List<RecordDto> getRecordsByUserId(@PathVariable Long id) throws UserNotFoundException {
         if (authenticationFacadeInterface.isAdmin()) {
             return RecordService.recordsToDto(recordService.getRecordsFromUsersAccounts(id));
