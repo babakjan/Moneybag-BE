@@ -32,6 +32,7 @@ public class AccountService {
 
     //get all
     public List<Account> getAll() {
+        authenticationService.ifNotAdminThrowAccessDenied();
         return accountRepository.findAll();
     }
 
@@ -44,18 +45,14 @@ public class AccountService {
         if (optionalAccount.isEmpty()) {
             throw new AccountNotFoundException(id);
         }
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(optionalAccount.get().getUser().getId());
 
-        if (authenticationService.isNotAdminOrSelfRequest(optionalAccount.get().getUser().getId())) {
-            throw new AccessDeniedException("Access denied.");
-        }
         return optionalAccount.get();
     }
 
     //get all accounts by user id with incomes and expenses from current month
     public List<AccountDto> getByAllByUserIdWithThisMontIncomesAndExpenses(Long userId) throws UserNotFoundException {
-        if (authenticationService.isNotAdminOrSelfRequest(userId)) {
-            throw new AccessDeniedException("Access denied.");
-        }
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException(userId);

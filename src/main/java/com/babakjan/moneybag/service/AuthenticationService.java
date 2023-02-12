@@ -79,4 +79,19 @@ public class AuthenticationService {
         return !authenticationFacadeInterface.isAdmin() && checkIfRequestingSelf(id) == null;
     }
 
+    public void ifNotAdminOrSelfRequestThrowAccessDenied(Long id) throws UserNotFoundException {
+        if (isNotAdminOrSelfRequest(id)) {
+            throw new AccessDeniedException("Access denied");
+        }
+    }
+
+    public boolean isAdmin() {
+        return authenticationFacadeInterface.isAdmin();
+    }
+
+    public void ifNotAdminThrowAccessDenied() {
+        if (!isAdmin()) {
+            throw new AccessDeniedException("Admin ROLE required.");
+        }
+    }
 }

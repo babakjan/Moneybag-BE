@@ -6,7 +6,6 @@ import com.babakjan.moneybag.dto.user.UpdateUserRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
 import com.babakjan.moneybag.dto.user.UserDto;
 import com.babakjan.moneybag.entity.ErrorMessage;
-import com.babakjan.moneybag.entity.Role;
 import com.babakjan.moneybag.entity.User;
 import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.AccountService;
@@ -28,7 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -86,12 +84,7 @@ public class UserController {
             description = "Role ADMIN can get all users. Role USER can get only self."
     )
     public UserDto getById(@PathVariable Long id) throws UserNotFoundException {
-        //admin has access to all users
-        if (authenticationFacadeInterface.isAdmin()) {
-            return userService.getById(id).dto();
-        }
-        //user has access only to self
-        return checkIfRequestingSelf(id).dto();
+        return userService.getById(id).dto();
     }
 
     @DeleteMapping("/{id}")
@@ -102,11 +95,7 @@ public class UserController {
                     "accounts. Role USER can delete only self."
     )
     public void deleteById(@PathVariable Long id) throws UserNotFoundException {
-        if (authenticationFacadeInterface.isAdmin()) {
-            userService.deleteById(id);
-            return;
-        }
-        userService.deleteById(checkIfRequestingSelf(id).getId());
+        userService.deleteById(id);
     }
 
     @PutMapping("/{id}")
@@ -119,14 +108,7 @@ public class UserController {
     )
     public UserDto update(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest request)
             throws UserNotFoundException {
-        if (authenticationFacadeInterface.isAdmin()) {
-            return userService.update(id, request).dto();
-        }
-        //admin role can set only admin
-        if (request.getRole() == Role.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-        return userService.update(checkIfRequestingSelf(id).getId(), request).dto();
+        return userService.update(id, request).dto();
     }
 
     //get accounts by user id
@@ -141,21 +123,12 @@ public class UserController {
             name = "withIncomesAndExpenses",
             description = "If true, compute incomes and expenses from current month."
     )
-    public List<AccountDto> getAccountsByUserId(@PathVariable Long id, @RequestParam @Nullable Boolean withIncomesAndExpenses)
-            throws UserNotFoundException {
-        if (withIncomesAndExpenses == null) {
-            withIncomesAndExpenses = false;
-        }
-        if (authenticationFacadeInterface.isAdmin()) {
-            if (withIncomesAndExpenses) {
-                return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
-            }
+    public List<AccountDto> getAccountsByUserId(
+            @PathVariable Long id, @RequestParam @Nullable Boolean withIncomesAndExpenses) throws UserNotFoundException {
+        if (withIncomesAndExpenses == null || !withIncomesAndExpenses) {
             return AccountService.accountsToDtos(userService.getById(id).getAccounts());
         }
-        if (withIncomesAndExpenses) {
-            return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
-        }
-        return AccountService.accountsToDtos(checkIfRequestingSelf(id).getAccounts());
+        return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
     }
 
     //get records by user id (all records from users accounts)
