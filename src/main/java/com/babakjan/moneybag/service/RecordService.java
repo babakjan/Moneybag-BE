@@ -12,6 +12,8 @@ import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.RecordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,9 +32,22 @@ public class RecordService {
 
     private final UserService userService;
 
+    private final AuthenticationService authenticationService;
+
     //get all
     public List<Record> getAll() {
         return recordRepository.findAll();
+    }
+
+    //get all filter
+    public List<Record> getAllFilter(Specification<Record> specification, Sort sort, Long userId)
+            throws UserNotFoundException {
+        if (userId == null) {
+            authenticationService.ifNotAdminThrowAccessDenied();
+        } else {
+            authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
+        }
+        return recordRepository.findAll(specification, sort);
     }
 
     //get by id

@@ -3,6 +3,7 @@ package com.babakjan.moneybag.controller;
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
 import com.babakjan.moneybag.entity.ErrorMessage;
+import com.babakjan.moneybag.entity.Record;
 import com.babakjan.moneybag.error.exception.AccountNotFoundException;
 import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.error.exception.RecordNotFoundException;
@@ -17,6 +18,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +68,16 @@ public class RecordController {
     @Operation(summary = "Return record by id.", description = "Role ADMIN is required.")
     public RecordDto getById(@PathVariable Long id) throws RecordNotFoundException {
         return recordService.getById(id).dto();
+    }
+
+
+    @GetMapping("/filter")
+    @ResponseStatus(HttpStatus.OK)
+    public List<RecordDto> getAllFilter(@And({
+            @Spec( path = "label", params = "label", spec = Like.class)
+    }) Specification<Record> specification, Sort sort, @RequestParam(required = false) Long userId)
+            throws UserNotFoundException {
+        return RecordService.recordsToDto(recordService.getAllFilter(specification, sort, userId));
     }
 
     //create
