@@ -18,6 +18,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.kaczmarzyk.spring.data.jpa.domain.Between;
+import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
@@ -74,7 +76,12 @@ public class RecordController {
     @GetMapping("/filter")
     @ResponseStatus(HttpStatus.OK)
     public List<RecordDto> getAllFilter(@And({
-            @Spec( path = "label", params = "label", spec = Like.class)
+            @Spec( path = "label", params = "label", spec = Like.class),
+            @Spec( path = "note", params = "note", spec = Like.class),
+            @Spec( path = "date", params = { "dateGt", "dateLt" }, spec = Between.class),
+            @Spec( path = "account.id", params = "accountId", spec = Equal.class),
+            @Spec( path = "category.id", params = "categoryId", spec = Equal.class),
+            @Spec( path = "account.user.id", params = "userId", spec = Equal.class)
     }) Specification<Record> specification, Sort sort, @RequestParam(required = false) Long userId)
             throws UserNotFoundException {
         return RecordService.recordsToDto(recordService.getAllFilter(specification, sort, userId));
