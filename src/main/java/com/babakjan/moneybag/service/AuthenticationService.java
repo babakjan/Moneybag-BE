@@ -37,11 +37,12 @@ public class AuthenticationService {
         }
 
         var user = new User(request, passwordEncoder);
-        userRepository.save(user);
+        user = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .user(user.dto())
                 .build();
     }
 
@@ -60,6 +61,7 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .user(user.dto())
                 .build();
     }
 

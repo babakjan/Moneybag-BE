@@ -20,7 +20,7 @@ public class UpdateAccountRequest {
     @Size(max = 20)
     private String currency;
 
-    private Long balance;
+    private Double balance;
 
     @Pattern(
             regexp = "^#[1-9abcdefABCDEF]{6}|^#[1-9abcdefABCDEF]{3}",

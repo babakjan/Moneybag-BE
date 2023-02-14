@@ -33,7 +33,7 @@ public class Account {
     private String currency;
 
     @Nonnull
-    private Long balance;
+    private Double balance;
 
     @Nonnull
     private String color = "#6290ff";

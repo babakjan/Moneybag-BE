@@ -22,10 +22,10 @@ public class AccountDto {
     @Size(max = 20)
     private String currency;
 
-    private Long balance;
+    private Double balance;
 
     @Pattern(
-            regexp = "^#[1-9abcdefABCDEF]{6}|^#[1-9abcdefABCDEF]{3}",
+            regexp = "^#[0-9abcdefABCDEF]{6}|^#[0-9abcdefABCDEF]{3}",
             message = "Color must be in the HEX format (#XXX or #XXXXXX)"
     )
     private String color;

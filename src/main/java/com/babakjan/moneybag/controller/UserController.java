@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -124,8 +123,9 @@ public class UserController {
             description = "If true, compute incomes and expenses from current month."
     )
     public List<AccountDto> getAccountsByUserId(
-            @PathVariable Long id, @RequestParam @Nullable Boolean withIncomesAndExpenses) throws UserNotFoundException {
-        if (withIncomesAndExpenses == null || !withIncomesAndExpenses) {
+            @PathVariable Long id, @RequestParam(required = false, defaultValue = "false") Boolean withIncomesAndExpenses)
+            throws UserNotFoundException {
+        if (!withIncomesAndExpenses) {
             return AccountService.accountsToDtos(userService.getById(id).getAccounts());
         }
         return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
