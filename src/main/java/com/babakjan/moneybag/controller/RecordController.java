@@ -38,7 +38,7 @@ import java.util.List;
 @ApiResponses(value = {
         @ApiResponse(
                 responseCode = "403",
-                description = "Forbidden. Role ADMIN is required.",
+                description = "Forbidden. Role USER tries to access or manipulate not their data.",
                 content = @Content
         ),
         @ApiResponse(
@@ -56,25 +56,21 @@ public class RecordController {
 
     private final RecordService recordService;
 
-    //get all
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Return all records.", description = "Role ADMIN is required.")
-    public List<RecordDto> getAll() {
-        return RecordService.recordsToDto(recordService.getAll());
-    }
-
     //get by id
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Return record by id.", description = "Role ADMIN is required.")
-    public RecordDto getById(@PathVariable Long id) throws RecordNotFoundException {
+    public RecordDto getById(@PathVariable Long id) throws RecordNotFoundException, UserNotFoundException {
         return recordService.getById(id).dto();
     }
 
-
-    @GetMapping("/filter")
+    //geta ll
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Return all records.",
+            description = "Role ADMIN can access all records, role USER only records from their accounts."
+    )
     public List<RecordDto> getAllFilter(@And({
             @Spec( path = "label", params = "label", spec = Like.class),
             @Spec( path = "note", params = "note", spec = Like.class),
@@ -107,7 +103,7 @@ public class RecordController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Delete record by id.", description = "Role ADMIN is required.")
-    public void deleteById(@PathVariable Long id) throws RecordNotFoundException {
+    public void deleteById(@PathVariable Long id) throws RecordNotFoundException, UserNotFoundException {
         recordService.deleteById(id);
     }
 

@@ -1,15 +1,11 @@
 package com.babakjan.moneybag.controller;
 
-import com.babakjan.moneybag.authentication.AuthenticationFacadeInterface;
 import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.user.UpdateUserRequest;
-import com.babakjan.moneybag.dto.record.RecordDto;
 import com.babakjan.moneybag.dto.user.UserDto;
 import com.babakjan.moneybag.entity.ErrorMessage;
-import com.babakjan.moneybag.entity.User;
 import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.AccountService;
-import com.babakjan.moneybag.service.RecordService;
 import com.babakjan.moneybag.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,7 +19,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,11 +55,7 @@ public class UserController {
 
     private final UserService userService;
 
-    private final RecordService recordService;
-
     private final AccountService accountService;
-
-    private final AuthenticationFacadeInterface authenticationFacadeInterface;
 
     //get all users
     @GetMapping
@@ -129,28 +120,5 @@ public class UserController {
             return AccountService.accountsToDtos(userService.getById(id).getAccounts());
         }
         return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
-    }
-
-    //get records by user id (all records from users accounts)
-    @GetMapping("/{id}/records")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(
-            summary = "Return all records from user's accounts by user id.",
-            description = "Role ADMIN is required or parameter id must belong to authenticated user."
-    )
-    public List<RecordDto> getRecordsByUserId(@PathVariable Long id) throws UserNotFoundException {
-        if (authenticationFacadeInterface.isAdmin()) {
-            return RecordService.recordsToDto(recordService.getRecordsFromUsersAccounts(id));
-        }
-        return RecordService.recordsToDto(recordService.getRecordsFromUsersAccounts(checkIfRequestingSelf(id).getId()));
-    }
-
-    public User checkIfRequestingSelf(Long id) throws UserNotFoundException {
-        User user = userService.getById(id);
-        if (authenticationFacadeInterface.getAuthentication() == null
-                || !user.getEmail().equals(authenticationFacadeInterface.getAuthentication().getName())) {
-            throw new AccessDeniedException("Access denied.");
-        }
-        return user;
     }
 }

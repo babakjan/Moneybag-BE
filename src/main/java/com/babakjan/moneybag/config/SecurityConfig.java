@@ -40,7 +40,6 @@ public class SecurityConfig {
 
     private final String[] adminPaths = {
             "/categories/**",
-//            "/records/**" //TODO: secure individual requests
     };
 
     @Bean

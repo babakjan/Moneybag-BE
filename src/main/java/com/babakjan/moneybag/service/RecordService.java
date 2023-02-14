@@ -30,12 +30,11 @@ public class RecordService {
 
     private final CategoryService categoryService;
 
-    private final UserService userService;
-
     private final AuthenticationService authenticationService;
 
     //get all
     public List<Record> getAll() {
+        authenticationService.ifNotAdminThrowAccessDenied();
         return recordRepository.findAll();
     }
 
@@ -51,7 +50,7 @@ public class RecordService {
     }
 
     //get by id
-    public Record getById(Long id) throws RecordNotFoundException {
+    public Record getById(Long id) throws RecordNotFoundException, UserNotFoundException {
         if (id == null) {
             throw new RecordNotFoundException("Record id can't be null.");
         }
@@ -59,6 +58,8 @@ public class RecordService {
         if (optionalRecord.isEmpty()) {
             throw new RecordNotFoundException(id);
         }
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(optionalRecord.get().getId());
+
         return optionalRecord.get();
     }
 
@@ -66,6 +67,9 @@ public class RecordService {
     public Record save(CreateRecordRequest request)
             throws AccountNotFoundException, CategoryNotFoundException, UserNotFoundException {
         Account account = accountService.getById(request.getAccountId());
+
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(account.getUser().getId());
+
         Category category = null;
         if (request.getCategoryId() != null) {
             category = categoryService.getById(request.getCategoryId());
@@ -88,6 +92,10 @@ public class RecordService {
         if (optionalRecord.isEmpty()) {
             throw new RecordNotFoundException(id);
         }
+
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(
+                optionalRecord.get().getAccount().getUser().getId());
+
         Account newAccount = null;
         if (null != recordDto.getAccountId()) {
             newAccount = accountService.getById(recordDto.getAccountId());
@@ -127,7 +135,7 @@ public class RecordService {
     }
 
     //delete by id
-    public void deleteById(Long id) throws RecordNotFoundException {
+    public void deleteById(Long id) throws RecordNotFoundException, UserNotFoundException {
         if (id == null) {
             throw new RecordNotFoundException("Record id can't be null.");
         }
@@ -135,17 +143,15 @@ public class RecordService {
         if (optionalRecord.isEmpty()) {
             throw new RecordNotFoundException(id);
         }
+
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(
+                optionalRecord.get().getAccount().getUser().getId()
+        );
+
         optionalRecord.get().getAccount().setBalance(
                 optionalRecord.get().getAccount().getBalance() - optionalRecord.get().getAmount()
         );
         recordRepository.deleteById(id);
-    }
-
-
-    //get records from user's accounts
-    public List<Record> getRecordsFromUsersAccounts(Long userId) throws UserNotFoundException {
-        userService.getById(userId); //check if user exists, if not exception is thrown
-        return recordRepository.filteredRecords(userId);
     }
 
     public static List<RecordDto> recordsToDto(List<Record> records) {
