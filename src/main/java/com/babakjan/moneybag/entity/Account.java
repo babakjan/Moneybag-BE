@@ -71,7 +71,7 @@ public class Account {
                 .icon(icon)
                 .includeInStatistic(includeInStatistic)
                 .userId(user != null ? user.getId() : null)
-                .recordIds(records.stream().map(Record::getId).toList())
+                .recordIds(records != null ? records.stream().map(Record::getId).toList() : new ArrayList<>())
                 .build();
     }
 

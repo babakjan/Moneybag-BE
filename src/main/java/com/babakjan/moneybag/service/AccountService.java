@@ -1,6 +1,5 @@
 package com.babakjan.moneybag.service;
 
-import com.babakjan.moneybag.authentication.AuthenticationFacadeInterface;
 import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import com.babakjan.moneybag.dto.account.UpdateAccountRequest;
@@ -27,8 +26,6 @@ public class AccountService {
     private final UserRepository userRepository;
 
     private final AuthenticationService authenticationService;
-
-    private final AuthenticationFacadeInterface authenticationFacadeInterface;
 
     //get all
     public List<Account> getAll() {
@@ -113,15 +110,12 @@ public class AccountService {
         if (optionalAccount.isEmpty()) {
             throw new AccountNotFoundException("Account of id: " + id + " not found.");
         }
-        //if signed user is not admin or trying update not their account.
-        if (authenticationService.isNotAdminOrSelfRequest(optionalAccount.get().getUser().getId())) {
-            throw new AccessDeniedException("Access denied.");
-        }
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(optionalAccount.get().getUser().getId());
+
         //if signed user is not admin and trying change user of account
         if (request.getUserId() != null
-                && !request.getUserId().equals(optionalAccount.get().getUser().getId())
-                && !authenticationFacadeInterface.isAdmin()) {
-            throw new AccessDeniedException("Access denied.");
+                && !request.getUserId().equals(optionalAccount.get().getUser().getId())) {
+            authenticationService.ifNotAdminThrowAccessDenied();
         }
         if (null != request.getName() && !"".equalsIgnoreCase(request.getName())) {
             optionalAccount.get().setName(request.getName());

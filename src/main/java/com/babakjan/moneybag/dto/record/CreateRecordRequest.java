@@ -17,7 +17,7 @@ import java.util.Date;
 public class CreateRecordRequest {
 
     @NotNull
-    private Long amount;
+    private Double amount;
 
     @NotNull
     @Size(min = 1, max = 20)

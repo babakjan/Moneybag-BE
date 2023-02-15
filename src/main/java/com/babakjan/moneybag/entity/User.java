@@ -12,10 +12,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -68,9 +68,7 @@ public class User implements UserDetails {
                 .lastName(lastName)
                 .email(email)
                 .role(role)
-                .accountIds(accounts
-                        .stream().map(Account::getId)
-                        .collect(Collectors.toList()))
+                .accountIds(accounts != null ? accounts.stream().map(Account::getId).toList() : new ArrayList<>())
                 .build();
     }
 

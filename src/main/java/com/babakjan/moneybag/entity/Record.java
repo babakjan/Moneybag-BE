@@ -23,7 +23,7 @@ public class Record {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long amount;
+    private Double amount;
 
     private String label;
 

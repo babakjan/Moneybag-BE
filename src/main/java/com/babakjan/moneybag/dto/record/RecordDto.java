@@ -17,7 +17,7 @@ public class RecordDto {
 
     private Long id;
 
-    private Long amount; //TODO change to double
+    private Double amount;
 
     @Size(min = 1, max = 20)
     private String label;

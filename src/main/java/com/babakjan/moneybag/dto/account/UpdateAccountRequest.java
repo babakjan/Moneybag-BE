@@ -14,21 +14,21 @@ import lombok.NoArgsConstructor;
 public class UpdateAccountRequest {
     private Long id;
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String name;
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String currency;
 
     private Double balance;
 
     @Pattern(
-            regexp = "^#[1-9abcdefABCDEF]{6}|^#[1-9abcdefABCDEF]{3}",
+            regexp = "^#[0-9abcdefABCDEF]{6}|^#[0-9abcdefABCDEF]{3}",
             message = "Color must be in the HEX format (#XXX or #XXXXXX)"
     )
     private String color;
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String icon;
 
     private Boolean includeInStatistic;

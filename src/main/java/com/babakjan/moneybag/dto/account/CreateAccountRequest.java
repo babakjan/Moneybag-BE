@@ -15,11 +15,11 @@ import lombok.NoArgsConstructor;
 public class CreateAccountRequest {
 
     @NotNull
-    @Size(min = 1, max = 20)
+    @Size(min = 1, max = 40)
     private String name;
 
     @NotNull
-    @Size(min = 1, max = 20)
+    @Size(min = 1, max = 40)
     private String currency;
 
     @NotNull
@@ -31,7 +31,7 @@ public class CreateAccountRequest {
     )
     private String color = "#388E3C";
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String icon = "mdi-cash";
 
     private Boolean includeInStatistic = true;

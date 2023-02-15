@@ -16,10 +16,10 @@ import java.util.List;
 public class AccountDto {
     private Long id;
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String name;
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String currency;
 
     private Double balance;
@@ -30,7 +30,7 @@ public class AccountDto {
     )
     private String color;
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String icon;
 
     private Boolean includeInStatistic;
