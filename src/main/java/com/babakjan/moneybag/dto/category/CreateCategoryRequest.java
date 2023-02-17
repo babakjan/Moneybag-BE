@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 public class CreateCategoryRequest {
 
     @NotNull
-    @Size(min = 1, max = 20)
+    @Size(min = 1, max = 40)
     private String name;
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String icon = "mid-shape-outline";
 
     @Pattern(

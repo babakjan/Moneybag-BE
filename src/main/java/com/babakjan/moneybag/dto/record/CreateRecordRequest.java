@@ -20,7 +20,7 @@ public class CreateRecordRequest {
     private Double amount;
 
     @NotNull
-    @Size(min = 1, max = 20)
+    @Size(min = 1, max = 40)
     private String label;
 
     @NotNull

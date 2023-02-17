@@ -46,7 +46,6 @@ public class CategoryService {
 
     //save
     public Category save(Category category) {
-        authenticationService.ifNotAdminThrowAccessDenied();
         return  categoryRepository.save(category);
     }
 

@@ -87,7 +87,10 @@ public class RecordController {
     //create
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create new record.", description = "Role ADMIN is required.")
+    @Operation(
+            summary = "Create new record.",
+            description = "Role ADMIN can create records to all accounts, role USER only to their accounts"
+    )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "404",
@@ -103,7 +106,10 @@ public class RecordController {
     //delete by id
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Delete record by id.", description = "Role ADMIN is required.")
+    @Operation(
+            summary = "Delete record by id.",
+            description = "Role ADMIN can delete all records, role USER only records from their accounts."
+    )
     public void deleteById(@PathVariable Long id) throws RecordNotFoundException, UserNotFoundException {
         recordService.deleteById(id);
     }
