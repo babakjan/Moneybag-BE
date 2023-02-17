@@ -2,6 +2,7 @@ package com.babakjan.moneybag.service;
 
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
+import com.babakjan.moneybag.dto.record.RecordsPagedResponse;
 import com.babakjan.moneybag.dto.record.UpdateRecordRequest;
 import com.babakjan.moneybag.entity.Account;
 import com.babakjan.moneybag.entity.Category;
@@ -13,7 +14,8 @@ import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.RecordRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -40,14 +42,14 @@ public class RecordService {
     }
 
     //get all filter
-    public List<Record> getAllFilter(Specification<Record> specification, Sort sort, Long userId)
+    public Page<Record> getAllFilter(Specification<Record> specification, Pageable pageable, Long userId)
             throws UserNotFoundException {
         if (userId == null) {
             authenticationService.ifNotAdminThrowAccessDenied();
         } else {
             authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
         }
-        return recordRepository.findAll(specification, sort);
+        return recordRepository.findAll(specification, pageable);
     }
 
     //get by id
@@ -160,5 +162,17 @@ public class RecordService {
         return records
                 .stream().map(Record::dto)
                 .collect(Collectors.toList());
+    }
+
+    public static RecordsPagedResponse recordsPageToDto(Page<Record> page) {
+        List<RecordDto> recordList = recordsToDto(page.stream().toList());
+
+        return RecordsPagedResponse.builder()
+                .page(page.getNumber())
+                .size(page.getSize())
+                .totalElements(page.getTotalElements())
+                .pageCount(page.getTotalPages())
+                .items(recordList)
+                .build();
     }
 }

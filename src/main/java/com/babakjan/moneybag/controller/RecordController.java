@@ -2,6 +2,7 @@ package com.babakjan.moneybag.controller;
 
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
+import com.babakjan.moneybag.dto.record.RecordsPagedResponse;
 import com.babakjan.moneybag.dto.record.UpdateRecordRequest;
 import com.babakjan.moneybag.entity.ErrorMessage;
 import com.babakjan.moneybag.entity.Record;
@@ -24,12 +25,10 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -72,16 +71,16 @@ public class RecordController {
             summary = "Return all records.",
             description = "Role ADMIN can access all records, role USER only records from their accounts."
     )
-    public List<RecordDto> getAllFilter(@And({
+    public RecordsPagedResponse getAllFilter(Pageable pageable, @RequestParam(required = false) Long userId, @And({
             @Spec( path = "label", params = "label", spec = Like.class),
             @Spec( path = "note", params = "note", spec = Like.class),
             @Spec( path = "date", params = { "dateGt", "dateLt" }, spec = Between.class),
             @Spec( path = "account.id", params = "accountId", spec = Equal.class),
             @Spec( path = "category.id", params = "categoryId", spec = Equal.class),
             @Spec( path = "account.user.id", params = "userId", spec = Equal.class)
-    }) Specification<Record> specification, Sort sort, @RequestParam(required = false) Long userId)
+    }) Specification<Record> specification)
             throws UserNotFoundException {
-        return RecordService.recordsToDto(recordService.getAllFilter(specification, sort, userId));
+        return RecordService.recordsPageToDto(recordService.getAllFilter(specification, pageable, userId));
     }
 
     //create
