@@ -2,6 +2,7 @@ package com.babakjan.moneybag.controller;
 
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
+import com.babakjan.moneybag.dto.record.UpdateRecordRequest;
 import com.babakjan.moneybag.entity.ErrorMessage;
 import com.babakjan.moneybag.entity.Record;
 import com.babakjan.moneybag.error.exception.AccountNotFoundException;
@@ -64,7 +65,7 @@ public class RecordController {
         return recordService.getById(id).dto();
     }
 
-    //geta ll
+    //geta all
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(
@@ -122,7 +123,7 @@ public class RecordController {
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
             )
     })
-    public RecordDto update(@PathVariable Long id, @RequestBody @Valid RecordDto request)
+    public RecordDto update(@PathVariable Long id, @RequestBody @Valid UpdateRecordRequest request)
             throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException, UserNotFoundException {
         return recordService.update(id, request).dto();
     }

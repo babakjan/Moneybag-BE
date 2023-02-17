@@ -1,15 +1,16 @@
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Shopping");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Food & Drinks");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Housing");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Transportation");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Vehicle");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Life & Entertainment");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Sport");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Communication, PC");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Financial expenses");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Investments");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Income");
-insert into categories (icon, name) values ("mdi-triangle-outlined", "Others");
+insert into categories (icon, name, color) values ("mdi-shopping-outline", "Shopping", "#F44336");
+insert into categories (icon, name, color) values ("mdi-food-outline", "Food & Drinks", "#388E3C");
+insert into categories (icon, name, color) values ("mdi-home-lightning-bolt-outline", "Housing", "#388E3C");
+insert into categories (icon, name, color) values ("mdi-train-car", "Transportation", "#388E3C");
+insert into categories (icon, name, color) values ("mdi-car-outline", "Vehicle", "#F44336");
+insert into categories (icon, name, color) values ("mdi-drama-masks", "Life & Entertainment", "#6200EA");
+insert into categories (icon, name, color) values ("mdi-basketball", "Sport", "#388E3C");
+insert into categories (icon, name, color) values ("mdi-laptop", "Communication, PC", "#6200EA");
+insert into categories (icon, name, color) values ("mdi-bank-outline", "Financial expenses", "#388E3C");
+insert into categories (icon, name, color) values ("mdi-chart-waterfall", "Investments", "#6200EA");
+insert into categories (icon, name, color) values ("mdi-hand-coin-outline", "Income", "#FFAB00");
+insert into categories (icon, name, color) values ("mdi-airplane", "Travelling", "#FFAB00");
+insert into categories (icon, name, color) values ("mdi-triangle-outline", "Others", "#CFD8DC");
 insert into users (email, first_name, last_name, password, role)
     values (
             "admin@gmail.com",

@@ -61,8 +61,8 @@ public class Record {
                 .note(note)
                 .amount(amount)
                 .date(date)
-                .accountId(account.getId())
-                .categoryId(category.getId())
+                .account(account.dtoReduced())
+                .category(category.dto())
                 .build();
     }
 }

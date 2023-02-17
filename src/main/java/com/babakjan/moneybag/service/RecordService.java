@@ -2,6 +2,7 @@ package com.babakjan.moneybag.service;
 
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
+import com.babakjan.moneybag.dto.record.UpdateRecordRequest;
 import com.babakjan.moneybag.entity.Account;
 import com.babakjan.moneybag.entity.Category;
 import com.babakjan.moneybag.entity.Record;
@@ -58,7 +59,8 @@ public class RecordService {
         if (optionalRecord.isEmpty()) {
             throw new RecordNotFoundException(id);
         }
-        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(optionalRecord.get().getId());
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(
+                optionalRecord.get().getAccount().getUser().getId());
 
         return optionalRecord.get();
     }
@@ -85,7 +87,7 @@ public class RecordService {
 
     //update
     @Transactional
-    public Record update(Long id, RecordDto recordDto)
+    public Record update(Long id, UpdateRecordRequest recordDto)
             throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException, UserNotFoundException {
         //find data
         Optional<Record> optionalRecord = recordRepository.findById(id);

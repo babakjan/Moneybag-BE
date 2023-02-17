@@ -68,8 +68,8 @@ public class AccountService {
             List<Record> records = accounts.get(i).getRecords()
                     .stream().filter(record -> record.getDate().after(startingDate)).toList();
 
-            long incomes = 0L;
-            long expenses = 0L;
+            double incomes = 0;
+            double expenses = 0;
 
             for (Record record : records) {
                 if (record.getAmount() < 0) {

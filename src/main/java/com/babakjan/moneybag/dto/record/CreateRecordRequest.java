@@ -24,7 +24,7 @@ public class CreateRecordRequest {
     private String label;
 
     @NotNull
-    @Size(max = 64)
+    @Size(max = 128)
     private String note;
 
     @NotNull

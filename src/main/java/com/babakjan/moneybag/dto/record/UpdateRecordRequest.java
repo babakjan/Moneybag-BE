@@ -1,7 +1,5 @@
 package com.babakjan.moneybag.dto.record;
 
-import com.babakjan.moneybag.dto.account.AccountDtoReduced;
-import com.babakjan.moneybag.dto.category.CategoryDto;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +13,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecordDto {
+public class UpdateRecordRequest {
 
     private Long id;
 
@@ -30,7 +28,7 @@ public class RecordDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date date;
 
-    private AccountDtoReduced account;
+    private Long accountId;
 
-    private CategoryDto category;
+    private Long categoryId;
 }

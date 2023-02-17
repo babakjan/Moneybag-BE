@@ -39,7 +39,7 @@ public class AccountDto {
 
     private Long userId;
 
-    Long incomes = null;
+    private Double incomes = null;
 
-    Long expenses = null;
+    private Double expenses = null;
 }

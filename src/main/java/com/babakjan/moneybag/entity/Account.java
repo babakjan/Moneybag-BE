@@ -1,6 +1,7 @@
 package com.babakjan.moneybag.entity;
 
 import com.babakjan.moneybag.dto.account.AccountDto;
+import com.babakjan.moneybag.dto.account.AccountDtoReduced;
 import com.babakjan.moneybag.dto.account.CreateAccountRequest;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
@@ -72,6 +73,16 @@ public class Account {
                 .includeInStatistic(includeInStatistic)
                 .userId(user != null ? user.getId() : null)
                 .recordIds(records != null ? records.stream().map(Record::getId).toList() : new ArrayList<>())
+                .build();
+    }
+
+    public AccountDtoReduced dtoReduced() {
+        return AccountDtoReduced.builder()
+                .id(id)
+                .name(name)
+                .currency(currency)
+                .color(color)
+                .icon(icon)
                 .build();
     }
 

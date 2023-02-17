@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "categories")
@@ -29,6 +28,8 @@ public class Category {
 
     private String icon;
 
+    private String color = "#6290ff";
+
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Record> records = new ArrayList<>(); // one category belongs to many records
 
@@ -43,10 +44,7 @@ public class Category {
                 .id(id)
                 .name(name)
                 .icon(icon)
-                .recordIds(records
-                        .stream().map(Record::getId)
-                        .collect(Collectors.toList())
-                )
+                .color(color)
                 .build();
     }
 

@@ -38,9 +38,7 @@ public class SecurityConfig {
             "/v3/api-docs/**"
     };
 
-    private final String[] adminPaths = {
-            "/categories/**",
-    };
+    private final String[] adminPaths = {};
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
