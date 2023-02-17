@@ -2,7 +2,7 @@ package com.babakjan.moneybag.controller;
 
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
-import com.babakjan.moneybag.dto.record.RecordsPagedResponse;
+import com.babakjan.moneybag.dto.PagedResponse;
 import com.babakjan.moneybag.dto.record.UpdateRecordRequest;
 import com.babakjan.moneybag.entity.ErrorMessage;
 import com.babakjan.moneybag.entity.Record;
@@ -71,7 +71,7 @@ public class RecordController {
             summary = "Return all records.",
             description = "Role ADMIN can access all records, role USER only records from their accounts."
     )
-    public RecordsPagedResponse getAllFilter(Pageable pageable, @RequestParam(required = false) Long userId, @And({
+    public PagedResponse<RecordDto> getAllFilter(Pageable pageable, @RequestParam(required = false) Long userId, @And({
             @Spec( path = "label", params = "label", spec = Like.class),
             @Spec( path = "note", params = "note", spec = Like.class),
             @Spec( path = "date", params = { "dateGt", "dateLt" }, spec = Between.class),

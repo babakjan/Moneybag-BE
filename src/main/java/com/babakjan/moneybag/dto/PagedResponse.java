@@ -1,4 +1,4 @@
-package com.babakjan.moneybag.dto.record;
+package com.babakjan.moneybag.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +11,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecordsPagedResponse {
+public class PagedResponse<T> {
 
-    private List<RecordDto> items;
+    private List<T> items;
 
     private Integer page; //page index starting from 0
 

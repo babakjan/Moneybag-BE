@@ -2,7 +2,7 @@ package com.babakjan.moneybag.service;
 
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
-import com.babakjan.moneybag.dto.record.RecordsPagedResponse;
+import com.babakjan.moneybag.dto.PagedResponse;
 import com.babakjan.moneybag.dto.record.UpdateRecordRequest;
 import com.babakjan.moneybag.entity.Account;
 import com.babakjan.moneybag.entity.Category;
@@ -164,15 +164,13 @@ public class RecordService {
                 .collect(Collectors.toList());
     }
 
-    public static RecordsPagedResponse recordsPageToDto(Page<Record> page) {
-        List<RecordDto> recordList = recordsToDto(page.stream().toList());
-
-        return RecordsPagedResponse.builder()
-                .page(page.getNumber())
-                .size(page.getSize())
-                .totalElements(page.getTotalElements())
-                .pageCount(page.getTotalPages())
-                .items(recordList)
-                .build();
+    public static PagedResponse<RecordDto> recordsPageToDto(Page<Record> page) {
+        return new PagedResponse<>(
+                recordsToDto(page.stream().toList()),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 }
