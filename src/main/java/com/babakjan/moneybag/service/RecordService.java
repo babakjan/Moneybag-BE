@@ -6,7 +6,6 @@ import com.babakjan.moneybag.dto.record.UpdateRecordRequest;
 import com.babakjan.moneybag.entity.Account;
 import com.babakjan.moneybag.entity.Category;
 import com.babakjan.moneybag.entity.Record;
-import com.babakjan.moneybag.entity.RecordAnalyticByCategory;
 import com.babakjan.moneybag.error.exception.AccountNotFoundException;
 import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.error.exception.RecordNotFoundException;
@@ -155,16 +154,6 @@ public class RecordService {
                 optionalRecord.get().getAccount().getBalance() - optionalRecord.get().getAmount()
         );
         recordRepository.deleteById(id);
-    }
-
-    //get records analytic group by category
-    public List<RecordAnalyticByCategory> getRecordsAnalyticByCategory(Long userId) throws UserNotFoundException {
-        if (userId == null) {
-            authenticationService.ifNotAdminThrowAccessDenied();
-        } else {
-            authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
-        }
-        return recordRepository.findRecordAnalyticByCategory(userId);
     }
 
     public static List<RecordDto> recordsToDto(List<Record> records) {

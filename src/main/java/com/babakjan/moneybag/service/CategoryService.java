@@ -1,9 +1,12 @@
 package com.babakjan.moneybag.service;
 
+import com.babakjan.moneybag.dto.category.CategoryAnalyticDto;
 import com.babakjan.moneybag.dto.category.CreateCategoryRequest;
 import com.babakjan.moneybag.dto.category.CategoryDto;
 import com.babakjan.moneybag.entity.Category;
+import com.babakjan.moneybag.entity.CategoryAnalytic;
 import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
+import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +83,17 @@ public class CategoryService {
         return categoryRepository.save(optionalCategory.get());
     }
 
+    //get categories analytic
+    public List<CategoryAnalytic> getCategoriesAnalytic(Long userId) throws UserNotFoundException {
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
+        return categoryRepository.findCategoriesAnalytic(userId);
+    }
+
     public static List<CategoryDto> categoriesToDtos(List<Category> categories) {
         return categories.stream().map(Category::dto).toList();
+    }
+
+    public static List<CategoryAnalyticDto> categoriesAnalyticToDtos(List<CategoryAnalytic> categoryAnalytics) {
+        return categoryAnalytics.stream().map(CategoryAnalytic::dto).toList();
     }
 }

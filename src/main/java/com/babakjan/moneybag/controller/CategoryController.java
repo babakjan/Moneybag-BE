@@ -1,9 +1,11 @@
 package com.babakjan.moneybag.controller;
 
+import com.babakjan.moneybag.dto.category.CategoryAnalyticDto;
 import com.babakjan.moneybag.dto.category.CreateCategoryRequest;
 import com.babakjan.moneybag.dto.category.CategoryDto;
 import com.babakjan.moneybag.entity.ErrorMessage;
 import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
+import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -115,5 +117,17 @@ public class CategoryController { //TODO add security
     public CategoryDto update(@PathVariable Long id, @RequestBody @Valid CategoryDto request)
             throws CategoryNotFoundException {
         return categoryService.update(id, request).dto();
+    }
+
+    //get records analytic by category id
+    @GetMapping("/analytic")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Return analytic of all categories.",
+            description = "Role ADMIN can access analytic of all users, role USER only of their accounts."
+    )
+    public List<CategoryAnalyticDto> getRecordAnalyticByCategory(@RequestParam Long userId)
+            throws UserNotFoundException {
+        return CategoryService.categoriesAnalyticToDtos(categoryService.getCategoriesAnalytic(userId));
     }
 }
