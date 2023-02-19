@@ -2,16 +2,18 @@ package com.babakjan.moneybag.controller;
 
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
-import com.babakjan.moneybag.dto.PagedResponse;
 import com.babakjan.moneybag.dto.record.UpdateRecordRequest;
 import com.babakjan.moneybag.entity.ErrorMessage;
 import com.babakjan.moneybag.entity.Record;
+import com.babakjan.moneybag.entity.RecordAnalyticByCategory;
 import com.babakjan.moneybag.error.exception.AccountNotFoundException;
 import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.error.exception.RecordNotFoundException;
 import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.RecordService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,15 +22,16 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.kaczmarzyk.spring.data.jpa.domain.Between;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
+import net.kaczmarzyk.spring.data.jpa.domain.*;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,16 +74,18 @@ public class RecordController {
             summary = "Return all records.",
             description = "Role ADMIN can access all records, role USER only records from their accounts."
     )
-    public PagedResponse<RecordDto> getAllFilter(Pageable pageable, @RequestParam(required = false) Long userId, @And({
-            @Spec( path = "label", params = "label", spec = Like.class),
-            @Spec( path = "note", params = "note", spec = Like.class),
+    public Page<RecordDto> getAllFilter(Pageable pageable, @RequestParam(required = false) Long userId, @And({
+            @Spec( path = "label", params = "label", spec = LikeIgnoreCase.class),
+            @Spec( path = "note", params = "note", spec = LikeIgnoreCase.class),
             @Spec( path = "date", params = { "dateGt", "dateLt" }, spec = Between.class),
             @Spec( path = "account.id", params = "accountId", spec = Equal.class),
             @Spec( path = "category.id", params = "categoryId", spec = Equal.class),
-            @Spec( path = "account.user.id", params = "userId", spec = Equal.class)
+            @Spec( path = "account.user.id", params = "userId", spec = Equal.class),
+            @Spec( path = "amount", params = "amountLt", spec = LessThan.class),
+            @Spec( path = "amount", params = "amountGt", spec = GreaterThan.class),
     }) Specification<Record> specification)
             throws UserNotFoundException {
-        return RecordService.recordsPageToDto(recordService.getAllFilter(specification, pageable, userId));
+        return recordService.getAllFilter(specification, pageable, userId).map(Record::dto);
     }
 
     //create
@@ -132,4 +137,22 @@ public class RecordController {
             throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException, UserNotFoundException {
         return recordService.update(id, request).dto();
     }
+
+    //get records analytic by category id
+    @GetMapping("/analytic/byCategory")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Return all records.",
+            description = "Role ADMIN can access all records, role USER only records from their accounts."
+    )
+    @Parameter(
+            in = ParameterIn.QUERY,
+            name = "userId",
+            description = "If provided, filter records by user (records from accounts of user)"
+    )
+    public List<RecordAnalyticByCategory> getRecordAnalyticByCategory(@RequestParam(required = false) Long userId)
+            throws UserNotFoundException {
+        return recordService.getRecordsAnalyticByCategory(userId);
+    }
+
 }

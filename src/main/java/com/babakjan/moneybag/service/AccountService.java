@@ -15,7 +15,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -162,8 +161,6 @@ public class AccountService {
     }
 
     public static List<AccountDto> accountsToDtos(List<Account> accounts) {
-        return accounts
-                .stream().map(Account::dto)
-                .collect(Collectors.toList());
+        return accounts.stream().map(Account::dto).toList();
     }
 }

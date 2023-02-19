@@ -2,11 +2,11 @@ package com.babakjan.moneybag.service;
 
 import com.babakjan.moneybag.dto.record.CreateRecordRequest;
 import com.babakjan.moneybag.dto.record.RecordDto;
-import com.babakjan.moneybag.dto.PagedResponse;
 import com.babakjan.moneybag.dto.record.UpdateRecordRequest;
 import com.babakjan.moneybag.entity.Account;
 import com.babakjan.moneybag.entity.Category;
 import com.babakjan.moneybag.entity.Record;
+import com.babakjan.moneybag.entity.RecordAnalyticByCategory;
 import com.babakjan.moneybag.error.exception.AccountNotFoundException;
 import com.babakjan.moneybag.error.exception.CategoryNotFoundException;
 import com.babakjan.moneybag.error.exception.RecordNotFoundException;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -158,19 +157,17 @@ public class RecordService {
         recordRepository.deleteById(id);
     }
 
-    public static List<RecordDto> recordsToDto(List<Record> records) {
-        return records
-                .stream().map(Record::dto)
-                .collect(Collectors.toList());
+    //get records analytic group by category
+    public List<RecordAnalyticByCategory> getRecordsAnalyticByCategory(Long userId) throws UserNotFoundException {
+        if (userId == null) {
+            authenticationService.ifNotAdminThrowAccessDenied();
+        } else {
+            authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
+        }
+        return recordRepository.findRecordAnalyticByCategory(userId);
     }
 
-    public static PagedResponse<RecordDto> recordsPageToDto(Page<Record> page) {
-        return new PagedResponse<>(
-                recordsToDto(page.stream().toList()),
-                page.getNumber(),
-                page.getSize(),
-                page.getTotalElements(),
-                page.getTotalPages()
-        );
+    public static List<RecordDto> recordsToDto(List<Record> records) {
+        return records.stream().map(Record::dto).toList();
     }
 }

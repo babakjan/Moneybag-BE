@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -76,8 +75,6 @@ public class UserService {
     }
 
     public static List<UserDto> usersToDtos(List<User> users) {
-        return users
-                .stream().map(User::dto)
-                .collect(Collectors.toList());
+        return users.stream().map(User::dto).toList();
     }
 }
