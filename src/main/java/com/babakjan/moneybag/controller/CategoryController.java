@@ -126,7 +126,7 @@ public class CategoryController { //TODO add security
             summary = "Return analytic of all categories.",
             description = "Role ADMIN can access analytic of all users, role USER only of their accounts."
     )
-    public List<CategoryAnalyticDto> getRecordAnalyticByCategory(@RequestParam Long userId)
+    public List<CategoryAnalyticDto> getCategoryAnalytic(@RequestParam Long userId)
             throws UserNotFoundException {
         return CategoryService.categoriesAnalyticToDtos(categoryService.getCategoriesAnalytic(userId));
     }

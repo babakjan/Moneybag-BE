@@ -2,9 +2,13 @@ package com.babakjan.moneybag.service;
 
 import com.babakjan.moneybag.dto.user.UpdateUserRequest;
 import com.babakjan.moneybag.dto.user.UserDto;
+import com.babakjan.moneybag.entity.Account;
 import com.babakjan.moneybag.entity.Role;
+import com.babakjan.moneybag.entity.TotalAnalytic;
 import com.babakjan.moneybag.entity.User;
 import com.babakjan.moneybag.error.exception.UserNotFoundException;
+import com.babakjan.moneybag.repository.AccountRepository;
+import com.babakjan.moneybag.repository.RecordRepository;
 import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,10 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final AccountRepository accountRepository;
+
+    private final RecordRepository recordRepository;
 
     private final AuthenticationService authenticationService;
 
@@ -72,6 +80,28 @@ public class UserService {
         }
         userRepository.save(optionalUser.get());
         return optionalUser.get();
+    }
+
+    /**
+     * total analytic of users spending
+     * @param userId user id
+     * @return total analytic of all accounts
+     * @throws UserNotFoundException user not found
+     */
+    public TotalAnalytic getTotalAnalytic(Long userId) throws UserNotFoundException {
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
+
+        double totalIncomes = recordRepository.getTotalIncomes(userId);
+        double totalExpenses = recordRepository.getTotalExpenses(userId);
+        double totalCashFlow = totalIncomes + totalExpenses;
+        double totalBalance = accountRepository.getTotalBalance(userId);
+        String currency = "";
+        List<Account> accounts = accountRepository.findAll();
+        if (accounts.size() > 0) {
+            currency = accounts.get(0).getCurrency();
+        }
+
+        return new TotalAnalytic(totalIncomes, totalExpenses, totalCashFlow, totalBalance, currency);
     }
 
     public static List<UserDto> usersToDtos(List<User> users) {

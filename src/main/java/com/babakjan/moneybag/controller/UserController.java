@@ -4,6 +4,7 @@ import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.user.UpdateUserRequest;
 import com.babakjan.moneybag.dto.user.UserDto;
 import com.babakjan.moneybag.entity.ErrorMessage;
+import com.babakjan.moneybag.entity.TotalAnalytic;
 import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.AccountService;
 import com.babakjan.moneybag.service.UserService;
@@ -120,5 +121,15 @@ public class UserController {
             return AccountService.accountsToDtos(userService.getById(id).getAccounts());
         }
         return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
+    }
+
+    @GetMapping("/{id}/totalAnalytic")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Return total analytic of all accounts.",
+            description = "Role ADMIN can access analytic of all users, role USER only of their accounts."
+    )
+    public TotalAnalytic getTotalAnalytic(@PathVariable Long id) throws UserNotFoundException {
+        return userService.getTotalAnalytic(id);
     }
 }

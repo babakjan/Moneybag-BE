@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    @Query("select new com.babakjan.moneybag.entity.CategoryAnalytic(c, sum(r.amount), count(r)) " +
+    @Query("select new com.babakjan.moneybag.entity.CategoryAnalytic(c, abs(sum(r.amount)), count(r)) " +
             "from Record r join Category c on r.category.id = c.id " +
-            "where (r.account.user.id = :userId or :userId is null)" +
+            "where (r.account.user.id = :userId or :userId is null) and (r.account.includeInStatistic)" +
             "group by r.category.id"
     )
     List<CategoryAnalytic> findCategoriesAnalytic(@Param("userId") Long userId);
