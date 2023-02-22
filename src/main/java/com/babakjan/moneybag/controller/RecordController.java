@@ -54,15 +54,31 @@ public class RecordController {
 
     private final RecordService recordService;
 
-    //get by id
+    /**
+     * Get record by id. Role ADMIN can access all records, role USER only theirs.
+     * @param id record id
+     * @return record of specified id
+     * @throws RecordNotFoundException Record of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Return record by id.", description = "Role ADMIN is required.")
+    @Operation(
+            summary = "Return record by id.",
+            description = "Role ADMIN can access all records, role USER only theirs"
+    )
     public RecordDto getById(@PathVariable Long id) throws RecordNotFoundException, UserNotFoundException {
         return recordService.getById(id).dto();
     }
 
-    //geta all
+    /**
+     * Get all records.
+     * @param pageable pagination specification (page, size, sort,...)
+     * @param userId user id
+     * @param specification filter parameters
+     * @return page of filtered records
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(
@@ -83,18 +99,28 @@ public class RecordController {
         return recordService.getAllFilter(specification, pageable, userId).map(Record::dto);
     }
 
-    //create
+    /**
+     * Create new record. Role ADMIN can create records to all accounts, role USER only to their accounts.
+     * @param request record data
+     * @return created record
+     * @throws CategoryNotFoundException Category from request doesn't exist.
+     * @throws AccountNotFoundException Account from request doesn't exist.
+     * @throws UserNotFoundException Authenticated user of user from request doesn't exist.
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(
             summary = "Create new record.",
-            description = "Role ADMIN can create records to all accounts, role USER only to their accounts"
+            description = "Role ADMIN can create records to all accounts, role USER only to their accounts."
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "404",
                     description = "Category or account not found.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)
+                    )
             )
     })
     public RecordDto create(@RequestBody @Valid CreateRecordRequest request)
@@ -102,7 +128,12 @@ public class RecordController {
         return recordService.save(request).dto();
     }
 
-    //delete by id
+    /**
+     * Delete record by id. Role ADMIN can delete all records, role USER only records from their accounts.
+     * @param id record id
+     * @throws RecordNotFoundException Record of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
@@ -113,12 +144,22 @@ public class RecordController {
         recordService.deleteById(id);
     }
 
-    //update
+    /**
+     * Update record by id. Role ADMIN can update all records, role USER can update only records from their accounts.
+     * @param id record id
+     * @param request record data (only fields, which will be changed)
+     * @return updated account
+     * @throws RecordNotFoundException Record of specified id doesn't exist.
+     * @throws CategoryNotFoundException Category from request doesn't exist.
+     * @throws AccountNotFoundException Account from request doesn't exist.
+     * @throws UserNotFoundException Authenticated user of user from request doesn't exist.
+     */
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Update record by id.",
-            description = "Update existing record by id, null or not provided fields are ignored. Role ADMIN is required."
+            description = "Update existing record by id, null or not provided fields are ignored. Role ADMIN can " +
+                    "update all records, role USER can update only records from their accounts."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),

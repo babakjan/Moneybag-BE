@@ -29,14 +29,22 @@ public class UserService {
 
     private final AuthenticationService authenticationService;
 
-    //get all
+    /**
+     * Get all users. Role ADMIN is required.
+     * @return list of users
+     */
     public List<User> getAll() {
         authenticationService.ifNotAdminThrowAccessDenied();
 
         return userRepository.findAll();
     }
 
-    //get by id
+    /**
+     * Get user by id. Role ADMIN can get all users. Role USER can get only self.
+     * @param id user id
+     * @return user of specified id
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     public User getById(Long id) throws UserNotFoundException {
         authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(id);
 
@@ -47,7 +55,12 @@ public class UserService {
         return optionalUser.get();
     }
 
-    //delete user by id
+    /**
+     * Delete user by id. All accounts and its records of this user will be also deleted! Role ADMIN can delete all
+     * users. Role USER can delete only self.
+     * @param id user id
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     public void deleteById(Long id) throws UserNotFoundException {
         if (id == null) {
             throw new UserNotFoundException("User's id can't be null.");
@@ -57,6 +70,14 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    /**
+     * Update user by id. Role ADMIN can update all users and can set role ADMIN to all users. Role USER can update
+     * only self and can't set role ADMIN.
+     * @param id user id
+     * @param request user data (only fields, which will be changed)
+     * @return updated user
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     public User update(Long id, UpdateUserRequest request) throws UserNotFoundException {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
@@ -84,10 +105,12 @@ public class UserService {
     }
 
     /**
-     * total analytic (from all accounts included in statistic) of users spending
+     * Get total analytic (from accounts included in statistic) (incomes, expenses, cash flow...) of user.
      * @param userId user id
-     * @return total analytic of all accounts
-     * @throws UserNotFoundException user not found
+     * @param dateGe dateGe date greater or equal than (inclusive)
+     * @param dateLt dateLt date lower than (exclusive)
+     * @return statistic of specified user
+     * @throws UserNotFoundException User of specified id doesn't exist.
      */
     public TotalAnalytic getTotalAnalytic(Long userId, Date dateGe, Date dateLt) throws UserNotFoundException {
         authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
@@ -110,6 +133,11 @@ public class UserService {
         return new TotalAnalytic(totalIncomes, totalExpenses, totalCashFlow, totalBalance, currency);
     }
 
+    /**
+     * Map list of users to list of data transfer objects.
+     * @param users list of users
+     * @return list of user dtos
+     */
     public static List<UserDto> usersToDtos(List<User> users) {
         return users.stream().map(User::dto).toList();
     }

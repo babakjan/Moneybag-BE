@@ -33,13 +33,23 @@ public class RecordService {
 
     private final AuthenticationService authenticationService;
 
-    //get all
+    /**
+     * Get all records. Role ADMIN is required.
+     * @return list of records
+     */
     public List<Record> getAll() {
         authenticationService.ifNotAdminThrowAccessDenied();
         return recordRepository.findAll();
     }
 
-    //get all filter
+    /**
+     * Get all records. Support filtering, sorting and pagination.
+     * @param pageable pagination specification (page, size, sort,...)
+     * @param userId user id
+     * @param specification filter parameters
+     * @return page of filtered records
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     public Page<Record> getAllFilter(Specification<Record> specification, Pageable pageable, Long userId)
             throws UserNotFoundException {
         if (userId == null) {
@@ -50,7 +60,13 @@ public class RecordService {
         return recordRepository.findAll(specification, pageable);
     }
 
-    //get by id
+    /**
+     * Get record by id. Role ADMIN can access all records, role USER only theirs.
+     * @param id record id
+     * @return record of specified id
+     * @throws RecordNotFoundException Record of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     public Record getById(Long id) throws RecordNotFoundException, UserNotFoundException {
         if (id == null) {
             throw new RecordNotFoundException("Record id can't be null.");
@@ -65,7 +81,14 @@ public class RecordService {
         return optionalRecord.get();
     }
 
-    //create
+    /**
+     * Create new record. Role ADMIN can create records to all accounts, role USER only to their accounts.
+     * @param request record data
+     * @return created record
+     * @throws CategoryNotFoundException Category from request doesn't exist.
+     * @throws AccountNotFoundException Account from request doesn't exist.
+     * @throws UserNotFoundException Authenticated user of user from request doesn't exist.
+     */
     public Record save(CreateRecordRequest request)
             throws AccountNotFoundException, CategoryNotFoundException, UserNotFoundException {
         Account account = accountService.getById(request.getAccountId());
@@ -85,9 +108,18 @@ public class RecordService {
         return record;
     }
 
-    //update
+    /**
+     * Update record by id. Role ADMIN can update all records, role USER can update only records from their accounts.
+     * @param id record id
+     * @param request record data (only fields, which will be changed)
+     * @return updated account
+     * @throws RecordNotFoundException Record of specified id doesn't exist.
+     * @throws CategoryNotFoundException Category from request doesn't exist.
+     * @throws AccountNotFoundException Account from request doesn't exist.
+     * @throws UserNotFoundException Authenticated user of user from request doesn't exist.
+     */
     @Transactional
-    public Record update(Long id, UpdateRecordRequest recordDto)
+    public Record update(Long id, UpdateRecordRequest request)
             throws RecordNotFoundException, CategoryNotFoundException, AccountNotFoundException, UserNotFoundException {
         //find data
         Optional<Record> optionalRecord = recordRepository.findById(id);
@@ -99,12 +131,12 @@ public class RecordService {
                 optionalRecord.get().getAccount().getUser().getId());
 
         Account newAccount = null;
-        if (null != recordDto.getAccountId()) {
-            newAccount = accountService.getById(recordDto.getAccountId());
+        if (null != request.getAccountId()) {
+            newAccount = accountService.getById(request.getAccountId());
         }
         Category newCategory = null;
-        if (null != recordDto.getCategoryId()) {
-            newCategory = categoryService.getById(recordDto.getCategoryId());
+        if (null != request.getCategoryId()) {
+            newCategory = categoryService.getById(request.getCategoryId());
         }
 
         //data changes
@@ -114,29 +146,34 @@ public class RecordService {
         if (null != newCategory) {
             optionalRecord.get().setCategory(newCategory);
         }
-        if (null != recordDto.getLabel() && !"".equalsIgnoreCase(recordDto.getLabel())) {
-            optionalRecord.get().setLabel(recordDto.getLabel());
+        if (null != request.getLabel() && !"".equalsIgnoreCase(request.getLabel())) {
+            optionalRecord.get().setLabel(request.getLabel());
         }
-        if (null != recordDto.getNote() && !"".equalsIgnoreCase(recordDto.getNote())) {
-            optionalRecord.get().setNote(recordDto.getNote());
+        if (null != request.getNote() && !"".equalsIgnoreCase(request.getNote())) {
+            optionalRecord.get().setNote(request.getNote());
         }
-        if (null != recordDto.getAmount()) {
+        if (null != request.getAmount()) {
             optionalRecord.get().getAccount().setBalance(
                     optionalRecord.get().getAccount().getBalance() - optionalRecord.get().getAmount()
             );
-            optionalRecord.get().setAmount(recordDto.getAmount());
+            optionalRecord.get().setAmount(request.getAmount());
             optionalRecord.get().getAccount().setBalance(
                     optionalRecord.get().getAccount().getBalance() + optionalRecord.get().getAmount()
             );
         }
-        if (null != recordDto.getDate()) {
-            optionalRecord.get().setDate(recordDto.getDate());
+        if (null != request.getDate()) {
+            optionalRecord.get().setDate(request.getDate());
         }
 
         return recordRepository.save(optionalRecord.get());
     }
 
-    //delete by id
+    /**
+     * Delete record by id. Role ADMIN can delete all records, role USER only records from their accounts.
+     * @param id record id
+     * @throws RecordNotFoundException Record of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     public void deleteById(Long id) throws RecordNotFoundException, UserNotFoundException {
         if (id == null) {
             throw new RecordNotFoundException("Record id can't be null.");
@@ -156,6 +193,11 @@ public class RecordService {
         recordRepository.deleteById(id);
     }
 
+    /**
+     * Map list of records to list of data transfer objects
+     * @param records list of records
+     * @return list of record dtos
+     */
     public static List<RecordDto> recordsToDto(List<Record> records) {
         return records.stream().map(Record::dto).toList();
     }

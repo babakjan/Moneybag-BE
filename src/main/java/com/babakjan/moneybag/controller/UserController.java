@@ -36,7 +36,10 @@ import java.util.List;
         @ApiResponse(
                 responseCode = "400",
                 description = "Bad request",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorMessage.class)
+                )
         ),
         @ApiResponse(
                 responseCode = "401",
@@ -51,7 +54,10 @@ import java.util.List;
         @ApiResponse(
                 responseCode = "404",
                 description = "Not found",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorMessage.class)
+                )
         )
 })
 public class UserController {
@@ -60,7 +66,10 @@ public class UserController {
 
     private final AccountService accountService;
 
-    //get all users
+    /**
+     * Get all users. Role ADMIN is required.
+     * @return list of users
+     */
     @GetMapping
     @Secured({"ADMIN"})
     @ResponseStatus(HttpStatus.OK)
@@ -69,7 +78,12 @@ public class UserController {
         return UserService.usersToDtos(userService.getAll());
     }
 
-    //get user by id
+    /**
+     * Get user by id. Role ADMIN can get all users. Role USER can get only self.
+     * @param id user id
+     * @return user of specified id
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
@@ -80,17 +94,31 @@ public class UserController {
         return userService.getById(id).dto();
     }
 
+    /**
+     * Delete user by id. All accounts and its records of this user will be also deleted! Role ADMIN can delete all
+     * users. Role USER can delete only self.
+     * @param id user id
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Delete user by id.",
             description = "All accounts and its records of this user will be also deleted! Role ADMIN can delete all " +
-                    "accounts. Role USER can delete only self."
+                    "users. Role USER can delete only self."
     )
     public void deleteById(@PathVariable Long id) throws UserNotFoundException {
         userService.deleteById(id);
     }
 
+    /**
+     * Update user by id. Role ADMIN can update all users and can set role ADMIN to all users. Role USER can update
+     * only self and can't set role ADMIN.
+     * @param id user id
+     * @param request user data (only fields, which will be changed)
+     * @return updated user
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
@@ -104,12 +132,18 @@ public class UserController {
         return userService.update(id, request).dto();
     }
 
-    //get accounts by user id
+    /**
+     * Get all accounts by user id. Role ADMIN can access accounts of all users, role USER only theirs.
+     * @param id user id
+     * @param withIncomesAndExpenses if true compute incomes and expense from last month
+     * @return list of accounts
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     @GetMapping("/{id}/accounts")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Return user's accounts by user id.",
-            description = "Role ADMIN is required or parameter id must belong to authenticated user."
+            description = "Role ADMIN can access accounts of all users, role USER only theirs."
     )
     @Parameter(
             in = ParameterIn.QUERY,
@@ -117,7 +151,8 @@ public class UserController {
             description = "If true, compute incomes and expenses from current month."
     )
     public List<AccountDto> getAccountsByUserId(
-            @PathVariable Long id, @RequestParam(required = false, defaultValue = "false") Boolean withIncomesAndExpenses)
+            @PathVariable Long id,
+            @RequestParam(required = false, defaultValue = "false") Boolean withIncomesAndExpenses)
             throws UserNotFoundException {
         if (!withIncomesAndExpenses) {
             return AccountService.accountsToDtos(userService.getById(id).getAccounts());
@@ -125,7 +160,14 @@ public class UserController {
         return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
     }
 
-    //get total statistics
+    /**
+     * Get total analytic (from accounts included in statistic) (incomes, expenses, cash flow...) of user.
+     * @param id user id
+     * @param dateGe dateGe date greater or equal than (inclusive)
+     * @param dateLt dateLt date lower than (exclusive)
+     * @return statistic of specified user
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     @GetMapping("/{id}/totalAnalytic")
     @ResponseStatus(HttpStatus.OK)
     @Operation(

@@ -20,10 +20,10 @@ public class UserDto {
 
     private Long id;
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String firstName;
 
-    @Size(max = 20)
+    @Size(max = 40)
     private String lastName;
 
     @Email

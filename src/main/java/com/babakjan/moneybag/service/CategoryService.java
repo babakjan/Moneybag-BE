@@ -24,12 +24,20 @@ public class CategoryService {
 
     private final AuthenticationService authenticationService;
 
-    //get all
+    /**
+     * Get all Categories.
+     * @return list of categories
+     */
     public List<Category> getAll() {
         return categoryRepository.findAll();
     }
 
-    //get by id
+    /**
+     * Get category by id.
+     * @param id category id
+     * @return category of specified id
+     * @throws CategoryNotFoundException Category of specified id doesn't exist.
+     */
     public Category getById(Long id) throws CategoryNotFoundException {
         if (id == null) {
             throw new CategoryNotFoundException("Category id can't be null.");
@@ -41,18 +49,29 @@ public class CategoryService {
         return optionalCategory.get();
     }
 
-    //create
+    /**
+     * Create new category. Role ADMIN is required.
+     * @param request category data
+     * @return created category
+     */
     public Category save(CreateCategoryRequest request) {
         authenticationService.ifNotAdminThrowAccessDenied();
         return categoryRepository.save(new Category(request));
     }
 
-    //save
+    /**
+     * Saves category.
+     * @return saved category
+     */
     public Category save(Category category) {
         return  categoryRepository.save(category);
     }
 
-    //delete
+    /**
+     * Delete category by id. All records in this category will be also deleted! Role ADMIN is required.
+     * @param id category id
+     * @throws CategoryNotFoundException Category of specified id doesn't exist.
+     */
     public void delete(Long id) throws CategoryNotFoundException {
         authenticationService.ifNotAdminThrowAccessDenied();
         if (id == null) {
@@ -61,7 +80,13 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
-    //update
+    /**
+     * Update category by id.
+     * @param id category id
+     * @param request category data (only fields, which will be changed)
+     * @return updated category
+     * @throws CategoryNotFoundException Category of specified id doesn't exist.
+     */
     @Transactional
     public Category update(Long id, CategoryDto request) throws CategoryNotFoundException {
         authenticationService.ifNotAdminThrowAccessDenied();
@@ -84,16 +109,34 @@ public class CategoryService {
         return categoryRepository.save(optionalCategory.get());
     }
 
-    //get categories analytic
-    public List<CategoryAnalytic> getCategoriesAnalytic(Long userId, Date dateGe, Date dateLt) throws UserNotFoundException {
+    /**
+     * Get analytic of category.
+     * @param userId user id (analytic of records of this user)
+     * @param dateGe date greater or equal than (inclusive)
+     * @param dateLt date lower than (exclusive)
+     * @return list of category analytics
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
+    public List<CategoryAnalytic> getCategoriesAnalytic(Long userId, Date dateGe, Date dateLt)
+            throws UserNotFoundException {
         authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
         return categoryRepository.findCategoriesAnalytic(userId, dateGe, dateLt);
     }
 
+    /**
+     * Map list of categories to list of data transfer objects.
+     * @param categories list of categories
+     * @return list of category dtos
+     */
     public static List<CategoryDto> categoriesToDtos(List<Category> categories) {
         return categories.stream().map(Category::dto).toList();
     }
 
+    /**
+     * Map list of category analytic to list of data transfer objects
+     * @param categoryAnalytics list of category analytic
+     * @return list of category analytic dto
+     */
     public static List<CategoryAnalyticDto> categoriesAnalyticToDtos(List<CategoryAnalytic> categoryAnalytics) {
         return categoryAnalytics.stream().map(CategoryAnalytic::dto).toList();
     }

@@ -30,7 +30,12 @@ public class AuthenticationService {
 
     private final AuthenticationFacadeInterface authenticationFacadeInterface;
 
-    //register new user
+    /**
+     * Register new user, create new user.
+     * @param request user data
+     * @return response with new user data and JWT token
+     * @throws UserAlreadyExistsException User with this username already exists.
+     */
     public AuthenticationResponse register(RegisterRequest request) throws UserAlreadyExistsException {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException(request.getEmail());
@@ -46,7 +51,11 @@ public class AuthenticationService {
                 .build();
     }
 
-    //authenticate user - generate token
+    /**
+     * Authenticate existing user.
+     * @param request request with username and password
+     * @return response with user data and JWT token
+     */
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -65,6 +74,12 @@ public class AuthenticationService {
                 .build();
     }
 
+    /**
+     * Check if id corresponds to authenticated user.
+     * @param id id to check
+     * @return user if id is same as id of authenticated user, otherwise null
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     public User checkIfRequestingSelf(Long id) throws UserNotFoundException {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
@@ -77,20 +92,38 @@ public class AuthenticationService {
         return optionalUser.get();
     }
 
+    /**
+     * Check if authenticated user has role ADMIN or id corresponds to authenticate user.
+     * @param id id to check
+     * @return true if is ADMIN or id is same as id of authenticated user
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
     public boolean isNotAdminOrSelfRequest(Long id) throws UserNotFoundException {
         return !authenticationFacadeInterface.isAdmin() && checkIfRequestingSelf(id) == null;
     }
 
+    /**
+     * If authenticated user hasn't role ADMIN and id doesn't correspond to id, throw Access denied exception.
+     * @param id id to check
+     * @throws UserNotFoundException .
+     */
     public void ifNotAdminOrSelfRequestThrowAccessDenied(Long id) throws UserNotFoundException {
         if (isNotAdminOrSelfRequest(id)) {
             throw new AccessDeniedException("Access denied");
         }
     }
 
+    /**
+     * Return if authenticated user has role ADMIN.
+     * @return true if has, otherwise false
+     */
     public boolean isAdmin() {
         return authenticationFacadeInterface.isAdmin();
     }
 
+    /**
+     * If authenticated user hasn't role ADMIN, throw Access denied exception.
+     */
     public void ifNotAdminThrowAccessDenied() {
         if (!isAdmin()) {
             throw new AccessDeniedException("Admin ROLE required.");

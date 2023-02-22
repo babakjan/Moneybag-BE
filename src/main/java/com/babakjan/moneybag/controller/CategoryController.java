@@ -45,7 +45,10 @@ public class CategoryController { //TODO add security
 
     private final CategoryService categoryService;
 
-    //get all
+    /**
+     * Get all Categories.
+     * @return list of categories
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Return all categories.")
@@ -53,7 +56,12 @@ public class CategoryController { //TODO add security
         return CategoryService.categoriesToDtos(categoryService.getAll());
     }
 
-    //get by id
+    /**
+     * Get category by id.
+     * @param id category id
+     * @return category of specified id
+     * @throws CategoryNotFoundException Category of specified id doesn't exist.
+     */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Return category by id.")
@@ -61,7 +69,11 @@ public class CategoryController { //TODO add security
         return categoryService.getById(id).dto();
     }
 
-    //create
+    /**
+     * Create new category. Role ADMIN is required.
+     * @param request category data
+     * @return created category
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"ADMIN"})
@@ -77,7 +89,11 @@ public class CategoryController { //TODO add security
         return categoryService.save(request).dto();
     }
 
-    //delete
+    /**
+     * Delete category by id. All records in this category will be also deleted! Role ADMIN is required.
+     * @param id category id
+     * @throws CategoryNotFoundException Category of specified id doesn't exist.
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ADMIN"})
@@ -96,19 +112,29 @@ public class CategoryController { //TODO add security
         categoryService.delete(id);
     }
 
-    //update
+    /**
+     * Update category by id.
+     * @param id category id
+     * @param request category data (only fields, which will be changed)
+     * @return updated category
+     * @throws CategoryNotFoundException Category of specified id doesn't exist.
+     */
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ADMIN"})
     @Operation(
             summary = "Update category by id.",
-            description = "Update existing category by id, null or not provided fields are ignored. Role ADMIN is required."
+            description = "Update existing category by id, null or not provided fields are ignored. Role ADMIN is " +
+                    "required."
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "404",
                     description = "Category not found.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -121,7 +147,14 @@ public class CategoryController { //TODO add security
         return categoryService.update(id, request).dto();
     }
 
-    //get records analytic by category id
+    /**
+     * Get analytic of category.
+     * @param userId user id (analytic of records of this user)
+     * @param dateGe date greater or equal than (inclusive)
+     * @param dateLt date lower than (exclusive)
+     * @return list of category analytics
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     @GetMapping("/analytic")
     @ResponseStatus(HttpStatus.OK)
     @Operation(

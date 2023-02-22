@@ -17,6 +17,11 @@ public class CategoryAnalytic {
 
     private Long numberOfRecords;
 
+
+    /**
+     * Create data transfer object.
+     * @return category analytic dto
+     */
     public CategoryAnalyticDto dto() {
         return CategoryAnalyticDto.builder()
                 .category(category.dto())

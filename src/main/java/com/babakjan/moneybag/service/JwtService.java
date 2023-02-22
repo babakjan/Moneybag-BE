@@ -44,6 +44,12 @@ public class JwtService {
         return createToken(claims, userDetails);
     }
 
+    /**
+     * Creates JWT token from user details
+     * @param claims .
+     * @param userDetails .
+     * @return JWT token
+     */
     private String createToken(Map<String, Object> claims, UserDetails userDetails) {
 
         return Jwts.builder()

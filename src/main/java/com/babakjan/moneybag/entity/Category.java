@@ -39,6 +39,10 @@ public class Category {
         records = new ArrayList<>();
     }
 
+    /**
+     * Create data transfer object.
+     * @return category dto
+     */
     public CategoryDto dto() {
         return CategoryDto.builder()
                 .id(id)
@@ -48,6 +52,10 @@ public class Category {
                 .build();
     }
 
+    /**
+     * Add record.
+     * @param record record to add
+     */
     public void addRecord(Record record) {
         for (Record r: records) {
             if (Objects.equals(r.getId(), record.getId())) {

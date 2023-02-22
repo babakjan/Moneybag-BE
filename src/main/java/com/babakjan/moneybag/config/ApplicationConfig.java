@@ -49,6 +49,7 @@ public class ApplicationConfig {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
     }
 
+    //contact for open api documentation
     private Contact contact() {
         Contact contact = new Contact();
         contact.email("babakhonza@gmail.com");
@@ -56,6 +57,7 @@ public class ApplicationConfig {
         return contact;
     }
 
+    //security scheme for open api documentation
     @Bean
     public SecurityScheme securityScheme() {
         return new SecurityScheme()
@@ -64,6 +66,7 @@ public class ApplicationConfig {
                 .description("description");
     }
 
+    //automatic documentation by open api
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()

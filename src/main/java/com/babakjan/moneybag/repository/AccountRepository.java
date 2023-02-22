@@ -10,6 +10,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
+    /**
+     * Get total balance of accounts (which are included in statistic) filtered by user id. If user id is null,
+     * balance of all accounts.
+     * @param userId user id.
+     * @return total balance
+     */
     @Query("select sum(a.balance) " +
             "from Account a " +
             "where (a.user.id = :userId or :userId is null) " +

@@ -13,6 +13,14 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
+    /**
+     * Get categories analytic filtered by user id. If user id is null, analytic of all categories. Records in accounts,
+     * which aren't included in statistic aren't included.
+     * @param userId user id
+     * @param dateGe dateGe date greater or equal than (inclusive)
+     * @param dateLt dateLt date lower than (exclusive)
+     * @return list of analytics
+     */
     @Query("select new com.babakjan.moneybag.entity.CategoryAnalytic(c, abs(sum(r.amount)), count(r)) " +
             "from Record r join Category c on r.category.id = c.id " +
             "where (r.account.user.id = :userId or :userId is null)" +

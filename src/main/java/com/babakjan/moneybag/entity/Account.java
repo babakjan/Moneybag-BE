@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * finance account
+ */
 @Entity
 @Table(name = "accounts")
 @Data
@@ -62,6 +65,10 @@ public class Account {
         this.user = user;
     }
 
+    /**
+     * Create data transfer object.
+     * @return account dto
+     */
     public AccountDto dto() {
         return AccountDto.builder()
                 .id(id)
@@ -76,6 +83,10 @@ public class Account {
                 .build();
     }
 
+    /**
+     * Create reduced data transfer object.
+     * @return account dto reduced
+     */
     public AccountDtoReduced dtoReduced() {
         return AccountDtoReduced.builder()
                 .id(id)
@@ -86,6 +97,10 @@ public class Account {
                 .build();
     }
 
+    /**
+     * Add record.
+     * @param record record to add
+     */
     public void addRecord(Record record) {
         for (Record r : records) {
             if (Objects.equals(r.getId(), record.getId())) {
@@ -93,24 +108,5 @@ public class Account {
             }
         }
         records.add(record);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder("Account{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", currency='" + currency + '\'' +
-                ", balance=" + balance +
-                ", color='" + color + '\'' +
-                ", icon='" + icon + '\'' +
-                ", includeInStatistic=" + includeInStatistic +
-                ", user={ id=" +(user != null ? user.getId() + ", email=" + user.getEmail() + " }" : "null }") +
-                ", records=");
-        for (Record record : records) {
-            result.append(" ").append(record.getId());
-        }
-        result.append("}");
-        return result.toString();
     }
 }

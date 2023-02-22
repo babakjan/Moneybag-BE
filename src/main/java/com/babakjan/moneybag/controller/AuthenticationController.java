@@ -32,7 +32,11 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    //authenticate
+    /**
+     * Authenticate existing user.
+     * @param request request with username and password
+     * @return response with user data and JWT token
+     */
     @PostMapping("/authenticate")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Authenticate existing user.", description = "Return Bearer token")
@@ -47,7 +51,12 @@ public class AuthenticationController {
         return authenticationService.authenticate(request);
     }
 
-    //register new user
+    /**
+     * Register new user, create new user.
+     * @param request user data
+     * @return response with new user data and JWT token
+     * @throws UserAlreadyExistsException User with this username already exists.
+     */
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Register new user.", description = "Return Bearer token")

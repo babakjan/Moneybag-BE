@@ -52,6 +52,10 @@ public class User implements UserDetails {
         role = Role.USER;
     }
 
+    /**
+     * Add account.
+     * @param account account to add
+     */
     public void  addAccount(Account account) {
         for (Account a: accounts) {
             if (Objects.equals(a.getId(), account.getId())) {
@@ -61,6 +65,10 @@ public class User implements UserDetails {
         accounts.add(account);
     }
 
+    /**
+     * Create data transfer object.
+     * @return user dto
+     */
     public UserDto dto() {
         return UserDto.builder()
                 .id(id)
@@ -72,6 +80,10 @@ public class User implements UserDetails {
                 .build();
     }
 
+    /**
+     * Get list of granted authorities (roles).
+     * @return list of authorities.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

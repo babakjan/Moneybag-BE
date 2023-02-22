@@ -54,6 +54,10 @@ public class Record {
         }
     }
 
+    /**
+     * Create data transfer object.
+     * @return record dto
+     */
     public RecordDto dto() {
         return RecordDto.builder()
                 .id(id)

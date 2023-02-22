@@ -26,13 +26,22 @@ public class AccountService {
 
     private final AuthenticationService authenticationService;
 
-    //get all
+    /**
+     * Get all accounts. Role ADMIN is required.
+     * @return list of accounts.
+     */
     public List<Account> getAll() {
         authenticationService.ifNotAdminThrowAccessDenied();
         return accountRepository.findAll();
     }
 
-    //get by id
+    /**
+     * Get account by id. Role ADMIN can access all accounts, role USER only theirs.
+     * @param id account id.
+     * @return account by specified id.
+     * @throws AccountNotFoundException Account of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     public Account getById(Long id) throws AccountNotFoundException, UserNotFoundException {
         if (id == null) {
             throw new AccountNotFoundException("Account id can't be null.");
@@ -46,7 +55,13 @@ public class AccountService {
         return optionalAccount.get();
     }
 
-    //get all accounts by user id with incomes and expenses from current month
+    /**
+     * Get all accounts by user id with incomes and expenses from current month. Role ADMIN can access accounts of all
+     * users, role USER only theirs.
+     * @param userId user id
+     * @return list of accounts
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     public List<AccountDto> getByAllByUserIdWithThisMontIncomesAndExpenses(Long userId) throws UserNotFoundException {
         authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -84,11 +99,14 @@ public class AccountService {
         return accountsDtos;
     }
 
-    //create
+    /**
+     * Create new account. Role ADMIN can create accounts for all users, role USER only for them.
+     * @param request new account data
+     * @return created account
+     * @throws UserNotFoundException Authenticated user or user form request doesn't exist.
+     */
     public Account save(CreateAccountRequest request) throws UserNotFoundException {
-        if (authenticationService.isNotAdminOrSelfRequest(request.getUserId())) {
-            throw new AccessDeniedException("Access denied.");
-        }
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(request.getUserId());
         Optional<User> optionalUser = userRepository.findById(request.getUserId());
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException(request.getUserId());
@@ -98,12 +116,23 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    //save
+    /**
+     * Save account to database.
+     * @param account account
+     * @return saved account
+     */
     public Account save(Account account) {
         return accountRepository.save(account);
     }
 
-    //update
+    /**
+     * Update account by id. Role ADMIN can update all accounts, role USER only theirs.
+     * @param id account id
+     * @param request account data (only fields, which will be changed)
+     * @return updated account
+     * @throws AccountNotFoundException Account of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user or user from request doesn't exist.
+     */
     public Account update(Long id, UpdateAccountRequest request) throws AccountNotFoundException, UserNotFoundException {
         Optional<Account> optionalAccount = accountRepository.findById(id);
         if (optionalAccount.isEmpty()) {
@@ -146,20 +175,31 @@ public class AccountService {
         return optionalAccount.get();
     }
 
-    //delete by id
-    public void deleteById(Long accountId) throws AccountNotFoundException, AccessDeniedException, UserNotFoundException {
+    /**
+     * Delete account by id. All records in this account will be also deleted!Role ADMIN can delete all accounts,
+     * role USER only theirs.
+     * @param accountId account id
+     * @throws AccountNotFoundException Account of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user or user from request doesn't exist.
+     */
+    public void deleteById(Long accountId) throws AccountNotFoundException, UserNotFoundException {
         if (accountId == null) {
             throw new AccountNotFoundException("Account id can't be null.");
         }
 
         Optional<Account> optionalAccount = accountRepository.findById(accountId);
-        if (optionalAccount.isPresent()
-                && authenticationService.isNotAdminOrSelfRequest(optionalAccount.get().getUser().getId())) {
+        if (optionalAccount.isPresent()) {
+            authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(optionalAccount.get().getUser().getId());
             throw new AccessDeniedException("User tried to delete account of other user.");
         }
         accountRepository.deleteById(accountId);
     }
 
+    /**
+     * Map list of accounts to list of account data transfer objects.
+     * @param accounts list of accounts
+     * @return list of accounts dto
+     */
     public static List<AccountDto> accountsToDtos(List<Account> accounts) {
         return accounts.stream().map(Account::dto).toList();
     }

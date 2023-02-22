@@ -31,6 +31,7 @@ public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
 
+    //paths, which don't require authentication
     private final String[] noAuthPaths = {
             "/auth/**",
             "/swagger-resources/**",
@@ -38,8 +39,10 @@ public class SecurityConfig {
             "/v3/api-docs/**"
     };
 
+    //paths, which require role ADMIN
     private final String[] adminPaths = {};
 
+    //enables cors for front end
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

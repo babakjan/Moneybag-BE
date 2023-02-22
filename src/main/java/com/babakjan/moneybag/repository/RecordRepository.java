@@ -16,7 +16,13 @@ public interface RecordRepository extends
         PagingAndSortingRepository<Record, Long>,
         JpaSpecificationExecutor<Record> {
 
-
+        /**
+         * Get total incomes from accounts (included in statistics) by user id. If user id is null, by all users.
+         * @param userId user id
+         * @param dateGe dateGe dateGe date greater or equal than (inclusive)
+         * @param dateLt dateLt date lower than (exclusive)
+         * @return total incomes
+         */
         @Query("select coalesce(sum(r.amount), 0) " +
                 "from Record r " +
                 "where (r.account.user.id = :userId or :userId is null) " +
@@ -26,6 +32,13 @@ public interface RecordRepository extends
         )
         Double getTotalIncomes(@Param("userId") Long userId, @Param("dateGe") Date dateGe, @Param("dateLt") Date dateLt);
 
+        /**
+         * Get total expenses from accounts (included in statistics) by user id. If user id is null, by all users.
+         * @param userId user id
+         * @param dateGe dateGe dateGe date greater or equal than (inclusive)
+         * @param dateLt dateLt date lower than (exclusive)
+         * @return total expenses
+         */
         @Query("select coalesce(sum(r.amount), 0) " +
                 "from Record r " +
                 "where (r.account.user.id = :userId or :userId is null) " +

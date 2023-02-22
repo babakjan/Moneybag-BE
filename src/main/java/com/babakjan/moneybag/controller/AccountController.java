@@ -41,14 +41,20 @@ import java.util.List;
         @ApiResponse(
                 responseCode = "400",
                 description = "Bad request",
-                content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorMessage.class)
+                )
         )
 })
 public class AccountController {
 
     private final AccountService accountService;
 
-    //get all
+    /**
+     * Get all accounts. Role ADMIN is required.
+     * @return list of accounts
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ADMIN"})
@@ -57,46 +63,82 @@ public class AccountController {
         return AccountService.accountsToDtos(accountService.getAll());
     }
 
-    //get by id
+    /**
+     * Get account by id. Role ADMIN can access all accounts, role USER only theirs.
+     * @param id account id
+     * @return account of specified id
+     * @throws AccountNotFoundException Account of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Return account by id.", description = "Role ADMIN is required.")
+    @Operation(
+            summary = "Return account by id.",
+            description = "Role ADMIN can access all accounts, role USER only their."
+    )
     public AccountDto getAccountById(@PathVariable Long id) throws AccountNotFoundException, UserNotFoundException {
         return accountService.getById(id).dto();
     }
 
-    //create
+    /**
+     * Create new account. Role ADMIN can create accounts for all users, role USER only for them.
+     * @param request new account data
+     * @return created account
+     * @throws UserNotFoundException Authenticated user or user form request doesn't exist.
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create new account.", description = "Role ADMIN is required.")
+    @Operation(
+            summary = "Create new account.",
+            description = "Role ADMIN can create accounts for all users, role USER only for themself."
+    )
     public AccountDto createAccount(@RequestBody @Valid CreateAccountRequest request) throws UserNotFoundException {
         return accountService.save(request).dto();
     }
 
-    //delete by id
+    /**
+     * Delete account by id. All records in this account will be also deleted!Role ADMIN can delete all accounts,
+     * role USER only theirs.
+     * @param id account id
+     * @throws AccountNotFoundException Account of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user doesn't exist.
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Delete account by id.",
-            description = "All records in this account will be also deleted! Role ADMIN is required."
+            description = "Role ADMIN can delete all accounts, role USER only theirs. All records in this account " +
+                    "will be also deleted!"
     )
     public void deleteById(@PathVariable Long id) throws AccountNotFoundException, UserNotFoundException {
         accountService.deleteById(id);
     }
 
-    //update
+    /**
+     * Update account by id. Update existing account by id, null or not provided fields are ignored. Role ADMIN can
+     * update all accounts, role USER only theirs.
+     * @param request account data (only fields, which will be changed)
+     * @param id account id
+     * @return updated account
+     * @throws AccountNotFoundException Account of specified id doesn't exist.
+     * @throws UserNotFoundException Authenticated user or user from request doesn't exist.
+     */
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Update account by id.",
-            description = "Update existing account by id, null or not provided fields are ignored. Role ADMIN is required."
+            description = "Update existing account by id, null or not provided fields are ignored. Role ADMIN can" +
+                    "update all accounts, role USER only theirs."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully updated."),
             @ApiResponse(
                     responseCode = "404",
                     description = "Account or any of it's records not found.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)
+                    )
             )
     })
     public AccountDto updateAccount(@RequestBody @Valid UpdateAccountRequest request, @PathVariable Long id)
