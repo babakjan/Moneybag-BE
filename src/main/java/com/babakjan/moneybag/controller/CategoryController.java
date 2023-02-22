@@ -16,10 +16,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -126,8 +128,11 @@ public class CategoryController { //TODO add security
             summary = "Return analytic of all categories.",
             description = "Role ADMIN can access analytic of all users, role USER only of their accounts."
     )
-    public List<CategoryAnalyticDto> getCategoryAnalytic(@RequestParam Long userId)
-            throws UserNotFoundException {
-        return CategoryService.categoriesAnalyticToDtos(categoryService.getCategoriesAnalytic(userId));
+    public List<CategoryAnalyticDto> getCategoryAnalytic(
+            @RequestParam Long userId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date dateGe,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date dateLt
+    ) throws UserNotFoundException {
+        return CategoryService.categoriesAnalyticToDtos(categoryService.getCategoriesAnalytic(userId, dateGe, dateLt));
     }
 }

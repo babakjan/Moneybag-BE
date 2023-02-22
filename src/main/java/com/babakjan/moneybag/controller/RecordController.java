@@ -72,7 +72,7 @@ public class RecordController {
     public Page<RecordDto> getAllFilter(Pageable pageable, @RequestParam(required = false) Long userId, @And({
             @Spec( path = "label", params = "label", spec = LikeIgnoreCase.class),
             @Spec( path = "note", params = "note", spec = LikeIgnoreCase.class),
-            @Spec( path = "date", params = { "dateGt", "dateLt" }, spec = Between.class),
+            @Spec( path = "date", params = { "dateGe", "dateLt" }, spec = Between.class),
             @Spec( path = "account.id", params = "accountId", spec = Equal.class),
             @Spec( path = "category.id", params = "categoryId", spec = Equal.class),
             @Spec( path = "account.user.id", params = "userId", spec = Equal.class),

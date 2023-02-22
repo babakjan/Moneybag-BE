@@ -13,6 +13,7 @@ import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,18 +84,23 @@ public class UserService {
     }
 
     /**
-     * total analytic of users spending
+     * total analytic (from all accounts included in statistic) of users spending
      * @param userId user id
      * @return total analytic of all accounts
      * @throws UserNotFoundException user not found
      */
-    public TotalAnalytic getTotalAnalytic(Long userId) throws UserNotFoundException {
+    public TotalAnalytic getTotalAnalytic(Long userId, Date dateGe, Date dateLt) throws UserNotFoundException {
         authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
 
-        double totalIncomes = recordRepository.getTotalIncomes(userId);
-        double totalExpenses = recordRepository.getTotalExpenses(userId);
-        double totalCashFlow = totalIncomes + totalExpenses;
-        double totalBalance = accountRepository.getTotalBalance(userId);
+        Double totalIncomes = recordRepository.getTotalIncomes(userId, dateGe, dateLt);
+        Double totalExpenses = recordRepository.getTotalExpenses(userId, dateGe, dateLt);
+        Double totalCashFlow = totalIncomes + totalExpenses;
+        Double totalBalance = accountRepository.getTotalBalance(userId); //not in date range
+        if (dateLt != null) {
+            Double totalIncomesAfterRange = recordRepository.getTotalIncomes(userId, dateLt, new Date());
+            Double totalExpenseAfterRange = recordRepository.getTotalExpenses(userId, dateLt, new Date());
+            totalBalance += - totalIncomesAfterRange - totalExpenseAfterRange; //in order to get balance from range
+        }
         String currency = "";
         List<Account> accounts = accountRepository.findAll();
         if (accounts.size() > 0) {

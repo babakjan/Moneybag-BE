@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,9 +85,9 @@ public class CategoryService {
     }
 
     //get categories analytic
-    public List<CategoryAnalytic> getCategoriesAnalytic(Long userId) throws UserNotFoundException {
+    public List<CategoryAnalytic> getCategoriesAnalytic(Long userId, Date dateGe, Date dateLt) throws UserNotFoundException {
         authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
-        return categoryRepository.findCategoriesAnalytic(userId);
+        return categoryRepository.findCategoriesAnalytic(userId, dateGe, dateLt);
     }
 
     public static List<CategoryDto> categoriesToDtos(List<Category> categories) {

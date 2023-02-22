@@ -19,10 +19,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -123,13 +125,18 @@ public class UserController {
         return accountService.getByAllByUserIdWithThisMontIncomesAndExpenses(id);
     }
 
+    //get total statistics
     @GetMapping("/{id}/totalAnalytic")
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Return total analytic of all accounts.",
             description = "Role ADMIN can access analytic of all users, role USER only of their accounts."
     )
-    public TotalAnalytic getTotalAnalytic(@PathVariable Long id) throws UserNotFoundException {
-        return userService.getTotalAnalytic(id);
+    public TotalAnalytic getTotalAnalytic(
+            @PathVariable Long id,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date dateGe,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date dateLt)
+            throws UserNotFoundException {
+        return userService.getTotalAnalytic(id, dateGe, dateLt);
     }
 }
