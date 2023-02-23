@@ -4,6 +4,7 @@ import com.babakjan.moneybag.dto.account.AccountDto;
 import com.babakjan.moneybag.dto.user.UpdateUserRequest;
 import com.babakjan.moneybag.dto.user.UserDto;
 import com.babakjan.moneybag.entity.ErrorMessage;
+import com.babakjan.moneybag.entity.TimeSeriesEntry;
 import com.babakjan.moneybag.entity.TotalAnalytic;
 import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.service.AccountService;
@@ -180,5 +181,28 @@ public class UserController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date dateLt)
             throws UserNotFoundException {
         return userService.getTotalAnalytic(id, dateGe, dateLt);
+    }
+
+    /**
+     * Get time series of balance evolution by user. Include only accounts, which are included in statistics.
+     * @param id user id
+     * @param dateGe dateGe dateGe date greater or equal than (inclusive)
+     * @param dateLt dateLt date lower than (exclusive)
+     * @return time series of total balance evolution
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
+    @GetMapping("/{id}/balanceEvolution")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Get time series of balance evolution by user. Include only accounts, which are included in " +
+                    "statistics.",
+            description = "Role ADMIN can access analytic of all users, role USER only of their accounts."
+    )
+    public List<TimeSeriesEntry> getBalanceEvolution(
+            @PathVariable Long id,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date dateGe,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date dateLt
+    ) throws UserNotFoundException {
+        return userService.getBalanceEvolution(id, dateGe, dateLt);
     }
 }

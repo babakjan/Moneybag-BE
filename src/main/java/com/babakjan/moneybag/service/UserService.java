@@ -2,10 +2,7 @@ package com.babakjan.moneybag.service;
 
 import com.babakjan.moneybag.dto.user.UpdateUserRequest;
 import com.babakjan.moneybag.dto.user.UserDto;
-import com.babakjan.moneybag.entity.Account;
-import com.babakjan.moneybag.entity.Role;
-import com.babakjan.moneybag.entity.TotalAnalytic;
-import com.babakjan.moneybag.entity.User;
+import com.babakjan.moneybag.entity.*;
 import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.AccountRepository;
 import com.babakjan.moneybag.repository.RecordRepository;
@@ -13,6 +10,7 @@ import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -118,12 +116,7 @@ public class UserService {
         Double totalIncomes = recordRepository.getTotalIncomes(userId, dateGe, dateLt);
         Double totalExpenses = recordRepository.getTotalExpenses(userId, dateGe, dateLt);
         Double totalCashFlow = totalIncomes + totalExpenses;
-        Double totalBalance = accountRepository.getTotalBalance(userId); //not in date range
-        if (dateLt != null) {
-            Double totalIncomesAfterRange = recordRepository.getTotalIncomes(userId, dateLt, new Date());
-            Double totalExpenseAfterRange = recordRepository.getTotalExpenses(userId, dateLt, new Date());
-            totalBalance += - totalIncomesAfterRange - totalExpenseAfterRange; //in order to get balance from range
-        }
+        Double totalBalance = getTotalBalance(userId, dateLt);
         String currency = "";
         List<Account> accounts = accountRepository.findAll();
         if (accounts.size() > 0) {
@@ -131,6 +124,65 @@ public class UserService {
         }
 
         return new TotalAnalytic(totalIncomes, totalExpenses, totalCashFlow, totalBalance, currency);
+    }
+
+    /**
+     * Get total balance before date. Include only accounts, which are included in statistics.
+     * @param userId user id
+     * @param dateLt date lower than
+     * @return total balance
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
+    public Double getTotalBalance(Long userId, Date dateLt) throws UserNotFoundException {
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
+        Double totalBalance = accountRepository.getTotalBalance(userId); //not in date range
+        if (dateLt != null) {
+            Double totalIncomesAfterRange = recordRepository.getTotalIncomes(userId, dateLt, new Date());
+            Double totalExpenseAfterRange = recordRepository.getTotalExpenses(userId, dateLt, new Date());
+            totalBalance += - totalIncomesAfterRange - totalExpenseAfterRange; //in order to get balance from range
+        }
+        return totalBalance;
+    }
+
+    /**
+     * Get time series of balance evolution by user. Include only accounts, which are included in statistics.
+     * @param userId user id
+     * @param dateGe dateGe dateGe date greater or equal than (inclusive)
+     * @param dateLt dateLt date lower than (exclusive)
+     * @return time series of total balance evolution
+     * @throws UserNotFoundException User of specified id doesn't exist.
+     */
+    public List<TimeSeriesEntry> getBalanceEvolution(Long userId, Date dateGe, Date dateLt) throws UserNotFoundException {
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(userId);
+
+        Double totalBalance = getTotalBalance(userId, dateLt);
+        List<TimeSeriesEntry> balanceEvolution =  recordRepository.getSpendingEvolution(userId, dateGe, dateLt);
+
+        for (int i = balanceEvolution.size() - 1; i >= 0; i--) {
+            Double tmp = balanceEvolution.get(i).getY();
+            balanceEvolution.get(i).setY(totalBalance);
+            totalBalance -= tmp;
+
+            //remove time from date (set i to midnight)
+            Date dateWithoutTime = balanceEvolution.get(i).getX();
+            dateWithoutTime.setHours(0);
+            dateWithoutTime.setMinutes(0);
+
+            balanceEvolution.get(0).setX(dateWithoutTime);
+        }
+
+        //when no records
+        if (balanceEvolution.isEmpty()) {
+            balanceEvolution.add(new TimeSeriesEntry(totalBalance, new Date()));
+        }
+
+        //add first and last element in order to fill entire interval
+        balanceEvolution.add(0, new TimeSeriesEntry(balanceEvolution.get(0).getY(), dateGe));
+        Date dateLe = dateLt;
+        dateLe.setDate(dateLt.getDate() - 1); //last element must be inclusive
+        balanceEvolution.add(new TimeSeriesEntry(balanceEvolution.get(balanceEvolution.size() -1).getY(), dateLe));
+
+        return balanceEvolution;
     }
 
     /**
