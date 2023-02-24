@@ -17,8 +17,10 @@ public class UpdateAccountRequest {
     @Size(max = 40)
     private String name;
 
+    /* May use later, but now currency per account is not suppoerted.
+    @NotNull
     @Size(max = 40)
-    private String currency;
+    private String currency; */
 
     private Double balance;
 

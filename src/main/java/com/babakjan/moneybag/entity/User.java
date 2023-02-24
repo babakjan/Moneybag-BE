@@ -44,12 +44,15 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts; //one user belongs to many accounts
 
+    private String currency; //all accounts of user have to be in same currency in order to make statistics
+
     public User(RegisterRequest request, PasswordEncoder passwordEncoder) {
         firstName = request.getFirstName();
         lastName = request.getLastName();
         email = request.getEmail();
         password = passwordEncoder.encode(request.getPassword());
         role = Role.USER;
+        currency = request.getCurrency();
     }
 
     /**
@@ -76,6 +79,7 @@ public class User implements UserDetails {
                 .lastName(lastName)
                 .email(email)
                 .role(role)
+                .currency(currency)
                 .accountIds(accounts != null ? accounts.stream().map(Account::getId).toList() : new ArrayList<>())
                 .build();
     }

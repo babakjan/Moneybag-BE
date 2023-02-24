@@ -16,7 +16,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      * @param userId user id.
      * @return total balance
      */
-    @Query("select sum(a.balance) " +
+    @Query("select coalesce(sum(a.balance), 0) " +
             "from Account a " +
             "where (a.user.id = :userId or :userId is null) " +
             "and a.includeInStatistic"

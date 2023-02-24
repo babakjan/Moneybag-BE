@@ -112,6 +112,8 @@ public class AccountService {
             throw new UserNotFoundException(request.getUserId());
         }
         Account account = new Account(request, optionalUser.get());
+        //account currency must match user currency, different currency per account is not supported yet
+        account.setCurrency(optionalUser.get().getCurrency());
         optionalUser.get().addAccount(account);
         return accountRepository.save(account);
     }
@@ -148,9 +150,10 @@ public class AccountService {
         if (null != request.getName() && !"".equalsIgnoreCase(request.getName())) {
             optionalAccount.get().setName(request.getName());
         }
+        /* not supported yet
         if (null != request.getCurrency() && !"".equalsIgnoreCase(request.getCurrency())) {
             optionalAccount.get().setCurrency(request.getCurrency());
-        }
+        } */
         if (null != request.getBalance()) {
             optionalAccount.get().setBalance(request.getBalance());
         }

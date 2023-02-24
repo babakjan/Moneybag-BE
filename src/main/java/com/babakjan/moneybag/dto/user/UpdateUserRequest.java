@@ -29,4 +29,7 @@ public class UpdateUserRequest {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Size(max = 40)
+    private String currency;
 }

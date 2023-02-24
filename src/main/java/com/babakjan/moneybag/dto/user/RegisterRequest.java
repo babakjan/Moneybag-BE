@@ -30,4 +30,8 @@ public class RegisterRequest {
     @NotNull
     @Size(min = 8, max = 40)
     private String password;
+
+    @NotNull
+    @Size(min = 1, max = 40)
+    private String currency;
 }

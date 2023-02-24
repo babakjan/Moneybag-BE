@@ -32,5 +32,8 @@ public class UserDto {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Size(min = 1, max = 40)
+    private String currency;
+
     private List<Long> accountIds;
 }

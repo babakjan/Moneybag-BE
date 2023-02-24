@@ -18,33 +18,36 @@ insert into categories (icon, name, color) values ("mdi-cash-multiple", "Other i
 insert into categories (icon, name, color) values ("mdi-bank-outline", "Financial expenses", "#46ffff");
 insert into categories (icon, name, color) values ("mdi-chart-line", "Investments", "#6290ff");
 insert into categories (icon, name, color) values ("mdi-triangle-outline", "Others", "#070513");
-insert into users (email, first_name, last_name, password, role)
+insert into users (email, first_name, last_name, password, role, currency)
     values (
             "admin@gmail.com",
             "admin",
             "admin",
             "$2a$12$URiJQXh/K4N4gL01TDyv4Oa0IF2aUWevTL0Phzb1A5Ypy3GloU726",
-            "ADMIN"
+            "ADMIN",
+            "EUR"
             );
-insert into users (email, first_name, last_name, password, role)
+insert into users (email, first_name, last_name, password, role, currency)
     values (
             "matej@gmail.com",
             "Matěj",
             "Babák",
             "$2a$12$URiJQXh/K4N4gL01TDyv4Oa0IF2aUWevTL0Phzb1A5Ypy3GloU726",
-            "USER"
+            "USER",
+            "CZK"
             );
-insert into users (email, first_name, last_name, password, role)
+insert into users (email, first_name, last_name, password, role, currency)
     values ("honza@gmail.com",
             "Jan",
             "Babák",
             "$2a$12$URiJQXh/K4N4gL01TDyv4Oa0IF2aUWevTL0Phzb1A5Ypy3GloU726",
-            "USER"
+            "USER",
+            "EUR"
             );
 insert into accounts (balance, color, currency, icon, include_in_statistic, name, user_id)
     values (50000,
             "#6290ff",
-            "CZK",
+            "EUR",
             "mdi-cash",
             true,
             "Savings",
@@ -53,7 +56,7 @@ insert into accounts (balance, color, currency, icon, include_in_statistic, name
 insert into accounts (balance, color, currency, icon, include_in_statistic, name, user_id)
     values (3250,
             "#6290ff",
-            "CZK",
+            "EUR",
             "mdi-cash",
             true,
             "Current",
@@ -62,7 +65,7 @@ insert into accounts (balance, color, currency, icon, include_in_statistic, name
 insert into accounts (balance, color, currency, icon, include_in_statistic, name, user_id)
     values (1000,
             "#6290ff",
-            "CZK",
+            "EUR",
             "mdi-cash",
             false,
             "Parent budget",
