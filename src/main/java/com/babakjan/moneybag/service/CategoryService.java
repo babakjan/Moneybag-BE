@@ -77,6 +77,9 @@ public class CategoryService {
         if (id == null) {
             throw new CategoryNotFoundException("Category id can't be null.");
         }
+        if (categoryRepository.findById(id).isEmpty()) {
+            throw new CategoryNotFoundException(id);
+        }
         categoryRepository.deleteById(id);
     }
 
@@ -110,7 +113,7 @@ public class CategoryService {
     }
 
     /**
-     * Get analytic of category.
+     * Get analytic of categories. Role ADMIN can access analytic of all users, role USER only of their accounts.
      * @param userId user id (analytic of records of this user)
      * @param dateGe date greater or equal than (inclusive)
      * @param dateLt date lower than (exclusive)

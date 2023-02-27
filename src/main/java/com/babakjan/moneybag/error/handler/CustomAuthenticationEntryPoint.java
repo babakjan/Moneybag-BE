@@ -15,7 +15,18 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException {
         System.out.println("problem is: " + response.getStatus());
-        //don't want to override response from CustomAccessDeniedHandler
+
+        //errors beside 401 UNAUTHORIZED and 403 FORBIDDEN
+        if (response.getStatus() >= 400
+                && response.getStatus() < 500
+                && response.getStatus() != HttpStatus.UNAUTHORIZED.value()
+                && response.getStatus() != HttpStatus.FORBIDDEN.value()) {
+            response.sendError(response.getStatus(), HttpStatus.valueOf(response.getStatus()).getReasonPhrase());
+            return;
+        }
+
+        //401 UNAUTHORIZED
+        //when access denied, don't want to override response from CustomAccessDeniedHandler
         if (!response.getHeaderNames().contains("access_denied_reason")
                 && response.getStatus() != HttpStatus.FORBIDDEN.value()) {
             response.setHeader("access_denied_reason", "authentication_required");

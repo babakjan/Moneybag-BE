@@ -82,9 +82,9 @@ insert into accounts (balance, color, currency, icon, include_in_statistic, name
             );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -150,
-           "2023-02-11 20:52:40.000000",
-           "climbing",
+           -7,
+           "2022-06-11 20:52:40.000000",
+           "Climbing",
            "entrance and renting climbing shoes",
            (select a.id
             from accounts a
@@ -93,8 +93,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
     values (
-            -150,
-            "2023-02-10 10:52:40.000000",
+            -7,
+            "2022-07-10 10:52:40.000000",
             "Climbing",
             "entrance and renting climbing shoes",
             (select a.id
@@ -104,10 +104,10 @@ insert into records (amount, date, label, note, account_id, category_id)
            );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -789,
-           "2023-02-11 20:52:40.000000",
+           -32,
+           "2022-06-13 20:52:40.000000",
            "Groceries",
-           "kaufland",
+           "Kaufland weekly shopping",
            (select a.id
             from accounts a
             where a.name = "Current" and a.user_id = (select u.id from users u where u.email = "honza@gmail.com")),
@@ -115,10 +115,10 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -50,
-           "2023-02-05 20:52:40.000000",
+           -3,
+           "2022-07-05 20:52:40.000000",
            "Plecharna",
-           "skate",
+           "skatepark entry",
            (select a.id
             from accounts a
             where a.name = "Current" and a.user_id = (select u.id from users u where u.email = "honza@gmail.com")),
@@ -126,8 +126,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -125,
-           "2023-02-11 12:52:40.000000",
+           -5,
+           "2022-09-01 12:52:40.000000",
            "Lunch",
            "School buffet.",
            (select a.id
@@ -137,7 +137,7 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -550,
+           -22,
            "2023-02-11 20:52:40.000000",
            "Party",
            "with Letci",
@@ -148,8 +148,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           300,
-           "2023-02-11 20:52:40.000000",
+           15,
+           "2023-02-15 20:52:40.000000",
            "Teaching",
            "math lesson",
            (select a.id
@@ -159,8 +159,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           300,
-           "2023-01-11 20:52:40.000000",
+           15,
+           "2023-03-11 20:52:40.000000",
            "Teaching",
            "math lesson",
            (select a.id
@@ -170,8 +170,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           300,
-           "2022-12-11 20:52:40.000000",
+           15,
+           "2022-01-01 20:52:40.000000",
            "Teaching",
            "math lesson",
            (select a.id
@@ -182,8 +182,8 @@ values (
 insert into records (amount, date, label, note, account_id, category_id)
 values (
            5000,
-           "2023-02-11 20:52:40.000000",
-           "schoolarship",
+           "2022-12-01 20:52:40.000000",
+           "Schoolarship",
            "for good studies",
            (select a.id
             from accounts a
@@ -192,10 +192,10 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -100,
-           "2023-02-11 20:52:40.000000",
+           -7,
+           "2023-02-02 20:52:40.000000",
            "Spotify",
-           "monthly subscription",
+           "monthly music subscription",
            (select a.id
             from accounts a
             where a.name = "Current" and a.user_id = (select u.id from users u where u.email = "honza@gmail.com")),
@@ -203,8 +203,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -250,
-           "2023-02-14 20:52:40.000000",
+           -10,
+           "2022-04-14 20:52:40.000000",
            "Pregnancy test",
            "",
            (select a.id
@@ -214,10 +214,10 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -3490,
-           "2023-02-15 20:52:40.000000",
+           -149,
+           "2022-12-15 20:52:40.000000",
            "Chair",
-           "DX racer k5",
+           "DX Racer Formula",
            (select a.id
             from accounts a
             where a.name = "Current" and a.user_id = (select u.id from users u where u.email = "honza@gmail.com")),
@@ -225,10 +225,10 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -16490,
-           "2023-02-15 20:52:40.000000",
+           -900,
+           "2022-11-10 20:52:40.000000",
            "iPhone",
-           "iPhone 13 mini 256gb, Alza",
+           "iPhone 13 mini 512gb, Alza",
            (select a.id
             from accounts a
             where a.name = "Current" and a.user_id = (select u.id from users u where u.email = "honza@gmail.com")),
@@ -236,8 +236,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -1299,
-           "2023-02-15 20:52:40.000000",
+           -49,
+           "2023-03-30 20:52:40.000000",
            "Skate shoes",
            "Vans oldskool Boardstar",
            (select a.id
@@ -247,8 +247,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -15000,
-           "2023-02-18 20:52:40.000000",
+           -700,
+           "2023-02-01 20:52:40.000000",
            "Rent",
            "same as always",
            (select a.id
@@ -259,7 +259,7 @@ values (
 insert into records (amount, date, label, note, account_id, category_id)
 values (
            -750,
-           "2023-02-19 20:52:40.000000",
+           "2023-01-19 20:52:40.000000",
            "Public transport ticker",
            "Monthly ticket",
            (select a.id
@@ -269,10 +269,10 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -12000,
-           "2023-02-20 14:52:40.000000",
+           -489,
+           "2022-08-20 14:52:40.000000",
            "Tires",
-           "4 tires Michellin",
+           "4 tires Continental",
            (select a.id
             from accounts a
             where a.name = "Current" and a.user_id = (select u.id from users u where u.email = "honza@gmail.com")),
@@ -280,8 +280,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -200,
-           "2023-02-21 14:52:40.000000",
+           -10,
+           "2022-10-21 14:52:40.000000",
            "Java security course",
            "Udemy course",
            (select a.id
@@ -291,8 +291,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -180,
-           "2023-02-22 14:52:40.000000",
+           -9,
+           "2022-12-22 14:52:40.000000",
            "Cinema",
            "Avatar Cinema city Flora",
            (select a.id
@@ -302,8 +302,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -9500,
-           "2023-02-23 14:52:40.000000",
+           -500,
+           "2022-10-23 14:52:40.000000",
            "Milan",
            "Weekend trip to Milan",
            (select a.id
@@ -313,10 +313,10 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           78000,
-           "2023-02-25 14:52:40.000000",
+           3900,
+           "2023-02-05 14:52:40.000000",
            "Salary",
-           "from main job",
+           "main job",
            (select a.id
             from accounts a
             where a.name = "Current" and a.user_id = (select u.id from users u where u.email = "honza@gmail.com")),
@@ -324,10 +324,10 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           500,
-           "2023-02-26 14:52:40.000000",
+           20,
+           "2023-03-26 14:52:40.000000",
            "Dividends",
-           "Apple dividends",
+           "Apple, Meta",
            (select a.id
             from accounts a
             where a.name = "Savings" and a.user_id = (select u.id from users u where u.email = "honza@gmail.com")),
@@ -335,10 +335,10 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -1500,
-           "2023-02-27 14:52:40.000000",
+           -60,
+           "2022-12-27 14:52:40.000000",
            "Accountant",
-           "Apple dividends",
+           "",
            (select a.id
             from accounts a
             where a.name = "Current" and a.user_id = (select u.id from users u where u.email = "honza@gmail.com")),
@@ -346,8 +346,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -4000,
-           "2023-02-28 14:52:40.000000",
+           -160,
+           "2023-03-28 14:52:40.000000",
            "ETFs",
            "VUSA.L",
            (select a.id
@@ -357,8 +357,8 @@ values (
        );
 insert into records (amount, date, label, note, account_id, category_id)
 values (
-           -850,
-           "2023-03-1 14:52:40.000000",
+           -34,
+           "2023-01-02 14:52:40.000000",
            "Gift",
            "Ondra's birthday",
            (select a.id

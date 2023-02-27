@@ -11,7 +11,6 @@ import com.babakjan.moneybag.error.exception.UserNotFoundException;
 import com.babakjan.moneybag.repository.AccountRepository;
 import com.babakjan.moneybag.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -191,10 +190,10 @@ public class AccountService {
         }
 
         Optional<Account> optionalAccount = accountRepository.findById(accountId);
-        if (optionalAccount.isPresent()) {
-            authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(optionalAccount.get().getUser().getId());
-            throw new AccessDeniedException("User tried to delete account of other user.");
+        if (optionalAccount.isEmpty()) {
+            throw new AccountNotFoundException(accountId);
         }
+        authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(optionalAccount.get().getUser().getId());
         accountRepository.deleteById(accountId);
     }
 

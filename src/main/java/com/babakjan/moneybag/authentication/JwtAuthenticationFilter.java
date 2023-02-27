@@ -1,11 +1,13 @@
 package com.babakjan.moneybag.authentication;
 
 import com.babakjan.moneybag.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,7 +44,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         //authenticate
         jwtToken = authHeader.substring(7); // "Bearer " has 7 chars
-        userEmail = jwtService.extractUsername(jwtToken);
+        try {
+            userEmail = jwtService.extractUsername(jwtToken);
+        } catch (ExpiredJwtException e) {
+            System.out.println("Token expired");
+            System.out.println(e.getMessage());
+            throw new AccessDeniedException("JWT token expired");
+        }
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
             if (jwtService.isTokenValid(jwtToken, userDetails)) {

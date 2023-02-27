@@ -64,6 +64,10 @@ public class UserService {
         }
         authenticationService.ifNotAdminOrSelfRequestThrowAccessDenied(id);
 
+        if (userRepository.findById(id).isEmpty()) {
+            throw new UserNotFoundException(id);
+        }
+
         userRepository.deleteById(id);
     }
 
@@ -102,7 +106,8 @@ public class UserService {
     }
 
     /**
-     * Get total analytic (from accounts included in statistic) (incomes, expenses, cash flow...) of user.
+     * Get total analytics (from accounts included in statistics) (incomes, expenses, cash flow...) of user. Role ADMIN
+     * can access the analytics of all users, role USER only of their accounts.
      * @param userId user id
      * @param dateGe dateGe date greater or equal than (inclusive)
      * @param dateLt dateLt date lower than (exclusive)
@@ -144,7 +149,8 @@ public class UserService {
     }
 
     /**
-     * Get time series of balance evolution by user. Include only accounts, which are included in statistics.
+     * Get time series of balance evolution by user. Include only accounts, which are included in statistics. Role
+     * ADMIN can access the analytics of all users, role USER only of their accounts.
      * @param userId user id
      * @param dateGe dateGe dateGe date greater or equal than (inclusive)
      * @param dateLt dateLt date lower than (exclusive)

@@ -39,7 +39,7 @@ public class AuthenticationController {
      */
     @PostMapping("/authenticate")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Authenticate existing user.", description = "Return Bearer token")
+    @Operation(summary = "Authenticate existing user.", description = "Return JWT token and user data.")
     @ApiResponses({
             @ApiResponse(
                     responseCode = "401",
@@ -59,7 +59,7 @@ public class AuthenticationController {
      */
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Register new user.", description = "Return Bearer token")
+    @Operation(summary = "Register new user.", description = "Return JWT token and user data.")
     @ApiResponses(value = { @ApiResponse(responseCode = "400", description = "User with this email already exists.") })
     public AuthenticationResponse register(@RequestBody @Valid RegisterRequest request)
             throws UserAlreadyExistsException {

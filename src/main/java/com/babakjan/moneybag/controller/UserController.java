@@ -162,7 +162,8 @@ public class UserController {
     }
 
     /**
-     * Get total analytic (from accounts included in statistic) (incomes, expenses, cash flow...) of user.
+     * Get total analytics (from accounts included in statistics) (incomes, expenses, cash flow...) of user. Role ADMIN
+     * can access the analytics of all users, role USER only of their accounts.
      * @param id user id
      * @param dateGe dateGe date greater or equal than (inclusive)
      * @param dateLt dateLt date lower than (exclusive)
@@ -173,7 +174,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Return total analytic of all accounts.",
-            description = "Role ADMIN can access analytic of all users, role USER only of their accounts."
+            description = "Role ADMIN can access the analytics of all users, role USER only of their accounts."
     )
     public TotalAnalytic getTotalAnalytic(
             @PathVariable Long id,
@@ -184,7 +185,8 @@ public class UserController {
     }
 
     /**
-     * Get time series of balance evolution by user. Include only accounts, which are included in statistics.
+     * Get time series of balance evolution by user. Include only accounts, which are included in statistics. Role
+     * ADMIN can access the analytics of all users, role USER only of their accounts.
      * @param id user id
      * @param dateGe dateGe dateGe date greater or equal than (inclusive)
      * @param dateLt dateLt date lower than (exclusive)
@@ -196,7 +198,7 @@ public class UserController {
     @Operation(
             summary = "Get time series of balance evolution by user. Include only accounts, which are included in " +
                     "statistics.",
-            description = "Role ADMIN can access analytic of all users, role USER only of their accounts."
+            description = "Role ADMIN can access the analytics of all users, role USER only of their accounts."
     )
     public List<TimeSeriesEntry> getBalanceEvolution(
             @PathVariable Long id,

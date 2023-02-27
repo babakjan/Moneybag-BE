@@ -36,12 +36,20 @@ public class RestResponseEntityExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class})
     public ErrorMessage invalidArgumentException(MethodArgumentNotValidException exception) {
         ErrorMessage errorMessage = new ErrorMessage(HttpStatus.BAD_REQUEST);
         exception.getBindingResult().getFieldErrors().forEach(error ->
             errorMessage.getErrors().put(error.getField(), error.getDefaultMessage())
         );
         return errorMessage;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorMessage illegalArgumentException(IllegalArgumentException exception) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("illegal argument", exception.getMessage());
+        return new ErrorMessage(HttpStatus.BAD_REQUEST, errors);
     }
 }

@@ -113,7 +113,7 @@ public class CategoryController { //TODO add security
     }
 
     /**
-     * Update category by id.
+     * Update category by id. Role ADMIN is required.
      * @param id category id
      * @param request category data (only fields, which will be changed)
      * @return updated category
@@ -148,7 +148,7 @@ public class CategoryController { //TODO add security
     }
 
     /**
-     * Get analytic of category.
+     * Get analytic of categories. Role ADMIN can access analytic of all users, role USER only of their accounts.
      * @param userId user id (analytic of records of this user)
      * @param dateGe date greater or equal than (inclusive)
      * @param dateLt date lower than (exclusive)
