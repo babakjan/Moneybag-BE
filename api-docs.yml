@@ -1,0 +1,1588 @@
+openapi: 3.0.1
+info:
+  title: Moneybag
+  description: Java backend REST API for Moneybag
+  contact:
+    name: Jan Babák
+    email: babakhonza@gmail.com
+  version: "1.0"
+servers:
+  - url: http://localhost:8000/api
+    description: Generated server url
+tags:
+  - name: Category
+    description: Category of record.
+  - name: Account
+    description: Financial account
+  - name: Authentication
+    description: Authentication and registration
+  - name: User
+    description: User information
+  - name: Record
+    description: Record of financial transaction
+paths:
+  /users/{id}:
+    get:
+      tags:
+        - User
+      summary: Return user by id.
+      description: Role ADMIN can get all users. Role USER can get only self.
+      operationId: getById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+      security:
+        - bearer-key: []
+    put:
+      tags:
+        - User
+      summary: Update user by id.
+      description: "Update existing user by id, null or not provided fields are ignored.\
+        \ Role ADMIN can update all users and can set role ADMIN to all users. Role\
+        \ USER can update only self and can't set role ADMIN."
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+        required: true
+      responses:
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+      security:
+        - bearer-key: []
+    delete:
+      tags:
+        - User
+      summary: Delete user by id.
+      description: All accounts and its records of this user will be also deleted!
+        Role ADMIN can delete all users. Role USER can delete only self.
+      operationId: deleteById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+      security:
+        - bearer-key: []
+  /records/{id}:
+    get:
+      tags:
+        - Record
+      summary: Return record by id.
+      description: "Role ADMIN can access all records, role USER only theirs"
+      operationId: getById_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordDto'
+      security:
+        - bearer-key: []
+    put:
+      tags:
+        - Record
+      summary: Update record by id.
+      description: "Update existing record by id, null or not provided fields are\
+        \ ignored. Role ADMIN can update all records, role USER can update only records\
+        \ from their accounts."
+      operationId: update_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRecordRequest'
+        required: true
+      responses:
+        "404":
+          description: "Record, category or account not found."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "200":
+          description: Successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordDto'
+        "401":
+          description: Unauthorized. Authentication is required.
+      security:
+        - bearer-key: []
+    delete:
+      tags:
+        - Record
+      summary: Delete record by id.
+      description: "Role ADMIN can delete all records, role USER only records from\
+        \ their accounts."
+      operationId: deleteById_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+      security:
+        - bearer-key: []
+  /categories/{id}:
+    get:
+      tags:
+        - Category
+      summary: Return category by id.
+      operationId: getById_2
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDto'
+      security:
+        - bearer-key: []
+    put:
+      tags:
+        - Category
+      summary: Update category by id.
+      description: "Update existing category by id, null or not provided fields are\
+        \ ignored. Role ADMIN is required."
+      operationId: update_2
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryDto'
+        required: true
+      responses:
+        "404":
+          description: Category not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role ADMIN is required.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDto'
+      security:
+        - bearer-key: []
+    delete:
+      tags:
+        - Category
+      summary: Delete category by id.
+      description: All records in this category will be also deleted! Role ADMIN is
+        required.
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role ADMIN is required.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+      security:
+        - bearer-key: []
+  /accounts/{id}:
+    get:
+      tags:
+        - Account
+      summary: Return account by id.
+      description: "Role ADMIN can access all accounts, role USER only their."
+      operationId: getAccountById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDto'
+      security:
+        - bearer-key: []
+    put:
+      tags:
+        - Account
+      summary: Update account by id.
+      description: "Update existing account by id, null or not provided fields are\
+        \ ignored. Role ADMIN canupdate all accounts, role USER only theirs."
+      operationId: updateAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAccountRequest'
+        required: true
+      responses:
+        "404":
+          description: Account or any of it's records not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "200":
+          description: Successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDto'
+        "401":
+          description: Unauthorized. Authentication is required.
+      security:
+        - bearer-key: []
+    delete:
+      tags:
+        - Account
+      summary: Delete account by id.
+      description: "Role ADMIN can delete all accounts, role USER only theirs. All\
+        \ records in this account will be also deleted!"
+      operationId: deleteById_2
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+      security:
+        - bearer-key: []
+  /records:
+    get:
+      tags:
+        - Record
+      summary: Return all records.
+      description: "Role ADMIN can access all records, role USER only records from\
+        \ their accounts."
+      operationId: getAllFilter
+      parameters:
+        - name: pageable
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/Pageable'
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: specification
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/SpecificationRecord'
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageRecordDto'
+      security:
+        - bearer-key: []
+    post:
+      tags:
+        - Record
+      summary: Create new record.
+      description: "Role ADMIN can create records to all accounts, role USER only\
+        \ to their accounts."
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRecordRequest'
+        required: true
+      responses:
+        "404":
+          description: Category or account not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordDto'
+      security:
+        - bearer-key: []
+  /categories:
+    get:
+      tags:
+        - Category
+      summary: Return all categories.
+      operationId: getAll_1
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryDto'
+      security:
+        - bearer-key: []
+    post:
+      tags:
+        - Category
+      summary: Create new category.
+      description: Role ADMIN is required.
+      operationId: create_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role ADMIN is required.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDto'
+      security:
+        - bearer-key: []
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user.
+      description: Return JWT token and user data.
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request. Not valid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+  /auth/authenticate:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate existing user.
+      description: Return JWT token and user data.
+      operationId: authenticate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request. Not valid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "401":
+          description: Unauthorized. Wrong username of password.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+  /accounts:
+    get:
+      tags:
+        - Account
+      summary: Return all accounts.
+      description: Role ADMIN is required.
+      operationId: getAll_2
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountDto'
+      security:
+        - bearer-key: []
+    post:
+      tags:
+        - Account
+      summary: Create new account.
+      description: "Role ADMIN can create accounts for all users, role USER only for\
+        \ themself."
+      operationId: createAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountDto'
+      security:
+        - bearer-key: []
+  /users:
+    get:
+      tags:
+        - User
+      summary: Return all users.
+      description: Role ADMIN is required.
+      operationId: getAll
+      responses:
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDto'
+      security:
+        - bearer-key: []
+  /users/{id}/totalAnalytic:
+    get:
+      tags:
+        - User
+      summary: Return total analytic of all accounts.
+      description: "Role ADMIN can access the analytics of all users, role USER only\
+        \ of their accounts."
+      operationId: getTotalAnalytic
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: dateGe
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dateLt
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotalAnalytic'
+      security:
+        - bearer-key: []
+  /users/{id}/balanceEvolution:
+    get:
+      tags:
+        - User
+      summary: "Get time series of balance evolution by user. Include only accounts,\
+        \ which are included in statistics."
+      description: "Role ADMIN can access the analytics of all users, role USER only\
+        \ of their accounts."
+      operationId: getBalanceEvolution
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: dateGe
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dateLt
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeSeriesEntry'
+      security:
+        - bearer-key: []
+  /users/{id}/accounts:
+    get:
+      tags:
+        - User
+      summary: Return user's accounts by user id.
+      description: "Role ADMIN can access accounts of all users, role USER only theirs."
+      operationId: getAccountsByUserId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: withIncomesAndExpenses
+          in: query
+          description: "If true, compute incomes and expenses from current month."
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "403":
+          description: Forbidden. Role USER tries to access or manipulate not their
+            data.
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountDto'
+      security:
+        - bearer-key: []
+  /categories/analytic:
+    get:
+      tags:
+        - Category
+      summary: Return analytic of all categories.
+      description: "Role ADMIN can access analytic of all users, role USER only of\
+        \ their accounts."
+      operationId: getCategoryAnalytic
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: dateGe
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: dateLt
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        "401":
+          description: Unauthorized. Authentication is required.
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryAnalyticDto'
+      security:
+        - bearer-key: []
+components:
+  schemas:
+    ErrorMessage:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - 100 CONTINUE
+            - 101 SWITCHING_PROTOCOLS
+            - 102 PROCESSING
+            - 103 CHECKPOINT
+            - 200 OK
+            - 201 CREATED
+            - 202 ACCEPTED
+            - 203 NON_AUTHORITATIVE_INFORMATION
+            - 204 NO_CONTENT
+            - 205 RESET_CONTENT
+            - 206 PARTIAL_CONTENT
+            - 207 MULTI_STATUS
+            - 208 ALREADY_REPORTED
+            - 226 IM_USED
+            - 300 MULTIPLE_CHOICES
+            - 301 MOVED_PERMANENTLY
+            - 302 FOUND
+            - 302 MOVED_TEMPORARILY
+            - 303 SEE_OTHER
+            - 304 NOT_MODIFIED
+            - 305 USE_PROXY
+            - 307 TEMPORARY_REDIRECT
+            - 308 PERMANENT_REDIRECT
+            - 400 BAD_REQUEST
+            - 401 UNAUTHORIZED
+            - 402 PAYMENT_REQUIRED
+            - 403 FORBIDDEN
+            - 404 NOT_FOUND
+            - 405 METHOD_NOT_ALLOWED
+            - 406 NOT_ACCEPTABLE
+            - 407 PROXY_AUTHENTICATION_REQUIRED
+            - 408 REQUEST_TIMEOUT
+            - 409 CONFLICT
+            - 410 GONE
+            - 411 LENGTH_REQUIRED
+            - 412 PRECONDITION_FAILED
+            - 413 PAYLOAD_TOO_LARGE
+            - 413 REQUEST_ENTITY_TOO_LARGE
+            - 414 URI_TOO_LONG
+            - 414 REQUEST_URI_TOO_LONG
+            - 415 UNSUPPORTED_MEDIA_TYPE
+            - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+            - 417 EXPECTATION_FAILED
+            - 418 I_AM_A_TEAPOT
+            - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+            - 420 METHOD_FAILURE
+            - 421 DESTINATION_LOCKED
+            - 422 UNPROCESSABLE_ENTITY
+            - 423 LOCKED
+            - 424 FAILED_DEPENDENCY
+            - 425 TOO_EARLY
+            - 426 UPGRADE_REQUIRED
+            - 428 PRECONDITION_REQUIRED
+            - 429 TOO_MANY_REQUESTS
+            - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+            - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+            - 500 INTERNAL_SERVER_ERROR
+            - 501 NOT_IMPLEMENTED
+            - 502 BAD_GATEWAY
+            - 503 SERVICE_UNAVAILABLE
+            - 504 GATEWAY_TIMEOUT
+            - 505 HTTP_VERSION_NOT_SUPPORTED
+            - 506 VARIANT_ALSO_NEGOTIATES
+            - 507 INSUFFICIENT_STORAGE
+            - 508 LOOP_DETECTED
+            - 509 BANDWIDTH_LIMIT_EXCEEDED
+            - 510 NOT_EXTENDED
+            - 511 NETWORK_AUTHENTICATION_REQUIRED
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+    UpdateUserRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstName:
+          maxLength: 40
+          minLength: 0
+          type: string
+        lastName:
+          maxLength: 40
+          minLength: 0
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - USER
+            - ADMIN
+        currency:
+          maxLength: 40
+          minLength: 0
+          type: string
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        firstName:
+          maxLength: 40
+          minLength: 0
+          type: string
+        lastName:
+          maxLength: 40
+          minLength: 0
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - USER
+            - ADMIN
+        currency:
+          maxLength: 40
+          minLength: 1
+          type: string
+        accountIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    UpdateRecordRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+        label:
+          maxLength: 40
+          minLength: 1
+          type: string
+        note:
+          maxLength: 128
+          minLength: 0
+          type: string
+        date:
+          type: string
+          format: date-time
+        accountId:
+          type: integer
+          format: int64
+        categoryId:
+          type: integer
+          format: int64
+    AccountDtoReduced:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          maxLength: 40
+          minLength: 0
+          type: string
+        currency:
+          maxLength: 40
+          minLength: 0
+          type: string
+        color:
+          pattern: "^#[0-9abcdefABCDEF]{6}|^#[0-9abcdefABCDEF]{3}"
+          type: string
+        icon:
+          maxLength: 40
+          minLength: 0
+          type: string
+    CategoryDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          maxLength: 40
+          minLength: 1
+          type: string
+        icon:
+          maxLength: 40
+          minLength: 1
+          type: string
+        color:
+          pattern: "^#[0-9abcdefABCDEF]{6}|^#[0-9abcdefABCDEF]{3}"
+          type: string
+    RecordDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+        label:
+          maxLength: 40
+          minLength: 1
+          type: string
+        note:
+          maxLength: 128
+          minLength: 0
+          type: string
+        date:
+          type: string
+          format: date-time
+        account:
+          $ref: '#/components/schemas/AccountDtoReduced'
+        category:
+          $ref: '#/components/schemas/CategoryDto'
+    UpdateAccountRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          maxLength: 40
+          minLength: 0
+          type: string
+        balance:
+          type: number
+          format: double
+        color:
+          pattern: "^#[0-9abcdefABCDEF]{6}|^#[0-9abcdefABCDEF]{3}"
+          type: string
+        icon:
+          maxLength: 40
+          minLength: 0
+          type: string
+        includeInStatistic:
+          type: boolean
+        userId:
+          type: integer
+          format: int64
+    AccountDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          maxLength: 40
+          minLength: 0
+          type: string
+        currency:
+          maxLength: 40
+          minLength: 0
+          type: string
+        balance:
+          type: number
+          format: double
+        color:
+          pattern: "^#[0-9abcdefABCDEF]{6}|^#[0-9abcdefABCDEF]{3}"
+          type: string
+        icon:
+          maxLength: 40
+          minLength: 0
+          type: string
+        includeInStatistic:
+          type: boolean
+        recordIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        userId:
+          type: integer
+          format: int64
+        incomes:
+          type: number
+          format: double
+        expenses:
+          type: number
+          format: double
+    CreateRecordRequest:
+      required:
+        - accountId
+        - amount
+        - date
+        - label
+        - note
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        label:
+          maxLength: 40
+          minLength: 1
+          type: string
+        note:
+          maxLength: 128
+          minLength: 0
+          type: string
+        date:
+          type: string
+          format: date-time
+        accountId:
+          type: integer
+          format: int64
+        categoryId:
+          type: integer
+          format: int64
+    CreateCategoryRequest:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          maxLength: 40
+          minLength: 1
+          type: string
+        icon:
+          maxLength: 40
+          minLength: 0
+          type: string
+        color:
+          pattern: "^#[0-9abcdefABCDEF]{6}|^#[0-9abcdefABCDEF]{3}"
+          type: string
+    RegisterRequest:
+      required:
+        - currency
+        - email
+        - firstName
+        - lastName
+        - password
+      type: object
+      properties:
+        firstName:
+          maxLength: 40
+          minLength: 1
+          type: string
+        lastName:
+          maxLength: 40
+          minLength: 1
+          type: string
+        email:
+          maxLength: 40
+          minLength: 0
+          type: string
+        password:
+          maxLength: 40
+          minLength: 8
+          type: string
+        currency:
+          maxLength: 40
+          minLength: 1
+          type: string
+    AuthenticationResponse:
+      required:
+        - user
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserDto'
+    AuthenticationRequest:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          maxLength: 40
+          minLength: 8
+          type: string
+    CreateAccountRequest:
+      required:
+        - balance
+        - currency
+        - name
+        - userId
+      type: object
+      properties:
+        name:
+          maxLength: 40
+          minLength: 1
+          type: string
+        currency:
+          maxLength: 40
+          minLength: 1
+          type: string
+        balance:
+          type: number
+          format: double
+        color:
+          pattern: "^#[0-9abcdefABCDEF]{6}|^#[0-9abcdefABCDEF]{3}"
+          type: string
+        icon:
+          maxLength: 40
+          minLength: 0
+          type: string
+        includeInStatistic:
+          type: boolean
+        userId:
+          type: integer
+          format: int64
+    TotalAnalytic:
+      required:
+        - balance
+        - cashFlow
+        - currency
+        - expenses
+        - incomes
+      type: object
+      properties:
+        incomes:
+          type: number
+          format: double
+        expenses:
+          type: number
+          format: double
+        cashFlow:
+          type: number
+          format: double
+        balance:
+          type: number
+          format: double
+        currency:
+          type: string
+    TimeSeriesEntry:
+      type: object
+      properties:
+        "y":
+          type: number
+          format: double
+        x:
+          type: string
+          format: date-time
+    Pageable:
+      type: object
+      properties:
+        page:
+          minimum: 0
+          type: integer
+          format: int32
+        size:
+          minimum: 1
+          type: integer
+          format: int32
+        sort:
+          type: array
+          items:
+            type: string
+    SpecificationRecord:
+      type: object
+    PageRecordDto:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        first:
+          type: boolean
+        last:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecordDto'
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    SortObject:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+    CategoryAnalyticDto:
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/CategoryDto'
+        amount:
+          type: number
+          format: double
+        numberOfRecords:
+          type: integer
+          format: int64
+  securitySchemes:
+    bearer-key:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
