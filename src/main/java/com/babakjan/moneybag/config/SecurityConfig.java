@@ -36,7 +36,7 @@ public class SecurityConfig {
             "/auth/**",
             "/swagger-resources/**",
             "/swagger-ui/**",
-            "/v3/api-docs/**"
+            "/v3/api-docs**"
     };
 
     //paths, which require role ADMIN
