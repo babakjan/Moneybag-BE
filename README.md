@@ -78,8 +78,8 @@ docker compose up -d
 
 ## 🖼️ Frontend examples
 
-<img src="./assets/images/landing.png" alt="Landing" />
-<img src="./assets/images/dashboard.png" alt="Dashboard" />
-<img src="./assets/images/records.png" alt="Records" />
-<img src="./assets/images/analytic.png" alt="Analytic" />
+<img src="./assets/images/landing.png" alt="Landing" style="border-radius: 0.25rem" />
+<img src="./assets/images/dashboard.png" alt="Dashboard" style="border-radius: 0.25rem" />
+<img src="./assets/images/records.png" alt="Records" style="border-radius: 0.25rem" />
+<img src="./assets/images/analytic.png" alt="Analytic" style="border-radius: 0.25rem" />
 

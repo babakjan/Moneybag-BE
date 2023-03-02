@@ -55,7 +55,7 @@ insert into accounts (balance, color, currency, icon, include_in_statistic, name
             );
 insert into accounts (balance, color, currency, icon, include_in_statistic, name, user_id)
     values (3250,
-            "#6290ff",
+            "#388E3C",
             "EUR",
             "mdi-cash",
             true,
@@ -63,12 +63,12 @@ insert into accounts (balance, color, currency, icon, include_in_statistic, name
             (select u.id from users u where u.email = "honza@gmail.com")
             );
 insert into accounts (balance, color, currency, icon, include_in_statistic, name, user_id)
-    values (1000,
-            "#6290ff",
+    values (4000,
+            "#FFAB00",
             "EUR",
             "mdi-cash",
             false,
-            "Parent budget",
+            "Family budget",
             (select u.id from users u where u.email = "honza@gmail.com")
             );
 insert into accounts (balance, color, currency, icon, include_in_statistic, name, user_id)
