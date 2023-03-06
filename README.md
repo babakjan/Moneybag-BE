@@ -76,6 +76,8 @@ docker compose up -d
 - If you want to run the app repeatedly, comment the previously uncommented line because you don't want to insert test data
   every time you restart the app.
 
+- Swagger documentation of running app can be found at http://localhost:8000/api/swagger-ui/index.html
+
 ## 🖼️ Frontend examples
 
 <img src="./assets/images/landing.png" alt="Landing" style="border-radius: 0.25rem" />

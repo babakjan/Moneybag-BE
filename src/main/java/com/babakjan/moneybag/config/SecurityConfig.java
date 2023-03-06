@@ -33,11 +33,11 @@ public class SecurityConfig {
 
     //paths, which don't require authentication
     private final String[] noAuthPaths = {
-            "/",
             "/auth/**",
             "/swagger-resources/**",
             "/swagger-ui/**",
-            "/v3/api-docs**"
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
     };
 
     //paths, which require role ADMIN
